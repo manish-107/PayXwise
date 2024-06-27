@@ -1,4 +1,4 @@
-# Expense Tracker App
+# PayXwise
 
 This React Native application helps users manage online transactions and track expenses efficiently. 
 It utilizes PostgreSQL as the database backend with Prisma ORM for data management and Hono as the 
