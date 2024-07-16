@@ -9,7 +9,7 @@ const index = () => {
         <Text className="text-red-700 ">headder</Text>
         <Text>headder</Text>
         <Text>Fottter</Text>
-        <Link href="/profile" style={{color:'blue'}} >Go to profile</Link>
+        <Link href="/profile" style={{color:'blue'}} >Go to home</Link>
     </View>
     </>
   )
