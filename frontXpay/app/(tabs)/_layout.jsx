@@ -1,17 +1,17 @@
-import { View, Text, Image } from 'react-native';
-import React from 'react';
-import { Tabs } from 'expo-router';
-import iconone from '../../assets/icon.png';
+import { View, Text, Image } from "react-native";
+import React from "react";
+import { Tabs } from "expo-router";
+import iconone from "../../assets/icon.png";
 
 const TabIcon = ({ icon, color, name }) => {
   return (
-    <View style={{ alignItems: 'center' }}>
-      <Image
+    <View style={{ alignItems: "center" }}>
+      {/* <Image
         source={icon}
         resizeMode="contain"
         style={{ width: 24, height: 24, tintColor: color }} // Adjusted styles
-      />
-      <Text style={{ color }}>{name}</Text> {/* Apply color to text */}
+      /> */}
+      <Text style={{ color }}>{name}</Text>
     </View>
   );
 };
@@ -25,11 +25,7 @@ const TabsLayout = () => {
           title: "Home",
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <TabIcon
-              icon={iconone}
-              name="Home"
-              color={color}
-            />
+            <TabIcon icon={iconone} name="Home" color={color} />
           ),
         }}
       />
@@ -39,11 +35,7 @@ const TabsLayout = () => {
           title: "Profile",
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <TabIcon
-              icon={iconone}
-              name="Profile"
-              color={color}
-            />
+            <TabIcon icon={iconone} name="Profile" color={color} />
           ),
         }}
       />
@@ -53,11 +45,7 @@ const TabsLayout = () => {
           title: "Settings",
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <TabIcon
-              icon={iconone}
-              name="Settings"
-              color={color}
-            />
+            <TabIcon icon={iconone} name="Settings" color={color} />
           ),
         }}
       />
@@ -67,11 +55,7 @@ const TabsLayout = () => {
           title: "Notifications",
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <TabIcon
-              icon={iconone}
-              name="Notifications"
-              color={color}
-            />
+            <TabIcon icon={iconone} name="Notifications" color={color} />
           ),
         }}
       />
