@@ -6,33 +6,32 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const index = () => {
   return (
     <>
-      <SafeAreaView className="h-full bg-[#161616]">
+      <SafeAreaView className="h-full bg-[#f7f7f7]">
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-          <View className="p-10 mt-10">
-            <View className="flex w-full">
+          <View className="justify-between flex-1 p-6 mt-8">
+            <View>
               <Text className="pb-3 text-4xl font-extrabold text-white">
                 Pay<Text className="text-[#00C2C7]">X</Text>wise
               </Text>
             </View>
-            <Text className="text-2xl font-medium leading-relaxed text-[#b3b3b3]">
-              Simplify{" "}
-              <Text className="text-[#55e3e0] font-bold">transactions</Text> and
-              {"\n"}
-              <Text className="text-[#55e3e0] font-bold">expense</Text>{" "}
-              management
-            </Text>
-            <View className="flex flex-row justify-around gap">
+            <View className="flex flex-col justify-around p-5 mt-10 bg-[#161614] rounded-3xl">
+              <Text className="text-3xl font-medium pt-3 leading-relaxed text-[#b3b3b3]">
+                Simplify{" "}
+                <Text className="text-[#F1F469] font-bold">transaction </Text>{" "}
+                and
+                <Text className="text-[#F1F469] font-bold"> expense</Text>{" "}
+                management
+              </Text>
+              <Text className="py-6 text-lg text-[#CBCBC7] ">
+                Here's a styled version of your component with the desired
+                changes
+              </Text>
               <Link
-                className="mt-10 text-lg font-semibold text-[#00C2C7] bg-white px-5 py-4  underline"
+                style={{ textDecorationLine: "none" }}
+                className="text-xl font-bold bg-[#CBCF00] text-[#000000] rounded-3xl text-center px-8 py-3 underline"
                 href="/signup"
               >
-                Sign up
-              </Link>
-              <Link
-                className="mt-10 text-lg font-semibold text-[#00C2C7] bg-white px-5 py-4 underline"
-                href="/signup"
-              >
-                Sign up
+                GetStarted
               </Link>
             </View>
           </View>
