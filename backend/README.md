@@ -1,3 +1,7 @@
+# npm init -y
+
+# npm install express
+
 # Transaction App Database Schema
 
 ## Overview
