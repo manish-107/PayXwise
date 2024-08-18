@@ -1,4 +1,5 @@
 import React from "react";
+import { useRouter } from "expo-router";
 import {
   Text,
   View,
@@ -6,12 +7,13 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import CustomeButton from "../../components/customeButton";
 
 const Signup = () => {
+  const router = useRouter();
+
   const [passwordVisible, setPasswordVisible] = React.useState(false);
   const [fullName, setFullName] = React.useState("");
   const [email, setEmail] = React.useState("");
@@ -20,7 +22,7 @@ const Signup = () => {
   const [confirmPass, setConfirmPass] = React.useState("");
   const [validateMsg, setValidateMsg] = React.useState({
     fullName: {
-      title: "Enter the email",
+      title: "Enter the full name",
       color: "#6B7280",
     },
     email: {
@@ -36,18 +38,132 @@ const Signup = () => {
       color: "#6B7280",
     },
     confirmPass: {
-      title: "Enter the password again",
+      title: "Confirm your password",
       color: "#6B7280",
     },
   });
 
-  const onclicklink = () => {
-    console.log(fullName, email, phoneNumber, password, confirmPass);
+  const validateData = () => {
+    let isValid = true;
+
+    // Check Full Name
+    if (fullName.length <= 0) {
+      setValidateMsg((prev) => ({
+        ...prev,
+        fullName: {
+          title: "Please enter full name",
+          color: "#aa2121",
+        },
+      }));
+      isValid = false;
+    } else {
+      setValidateMsg((prev) => ({
+        ...prev,
+        fullName: {
+          title: "Enter the full name",
+          color: "#6B7280",
+        },
+      }));
+    }
+
+    // Check Email
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setValidateMsg((prev) => ({
+        ...prev,
+        email: {
+          title: "Please enter a valid email address",
+          color: "#aa2121",
+        },
+      }));
+      isValid = false;
+    } else {
+      setValidateMsg((prev) => ({
+        ...prev,
+        email: {
+          title: "Enter the email",
+          color: "#6B7280",
+        },
+      }));
+    }
+
+    // Check Password
+    if (password.length <= 4) {
+      setValidateMsg((prev) => ({
+        ...prev,
+        password: {
+          title: "Password should be greater than 4 characters",
+          color: "#aa2121",
+        },
+      }));
+      isValid = false;
+    } else {
+      setValidateMsg((prev) => ({
+        ...prev,
+        password: {
+          title: "Enter the password",
+          color: "#6B7280",
+        },
+      }));
+    }
+
+    // Check Confirm Password
+    if (confirmPass !== password) {
+      setValidateMsg((prev) => ({
+        ...prev,
+        confirmPass: {
+          title: "Passwords do not match",
+          color: "#aa2121",
+        },
+      }));
+      isValid = false;
+    } else {
+      setValidateMsg((prev) => ({
+        ...prev,
+        confirmPass: {
+          title: "Confirm your password",
+          color: "#6B7280",
+        },
+      }));
+    }
+
+    // Check Phone Number
+    if (phoneNumber.length < 10 || isNaN(phoneNumber)) {
+      setValidateMsg((prev) => ({
+        ...prev,
+        phoneNumber: {
+          title: "Please enter a valid phone number (at least 10 digits)",
+          color: "#aa2121",
+        },
+      }));
+      isValid = false;
+    } else {
+      setValidateMsg((prev) => ({
+        ...prev,
+        phoneNumber: {
+          title: "Enter your phone number",
+          color: "#6B7280",
+        },
+      }));
+    }
+
+    return isValid;
   };
 
-  // Define the conditional border color
-
-  // Define the style object with dynamic border color
+  const onclicklink = () => {
+    if (validateData()) {
+      router.push({
+        pathname: "/signupnext",
+        params: {
+          fullName,
+          email,
+          phoneNumber,
+          password,
+        },
+      });
+    }
+  };
 
   return (
     <SafeAreaView className="h-full bg-black">
@@ -63,9 +179,9 @@ const Signup = () => {
                 Full Name
               </Text>
               <TextInput
-                className="w-full h-10 pl-2 text-lg text-white bg-gray-900 rounded-lg"
+                className="w-full h-10 pl-2 text-lg text-white bg-gray-900 border-2 rounded-lg"
                 style={{ borderColor: validateMsg.fullName.color }}
-                placeholder={`${validateMsg.fullName.title}`}
+                placeholder={validateMsg.fullName.title}
                 placeholderTextColor="#888"
                 onChangeText={setFullName}
                 value={fullName}
@@ -81,9 +197,10 @@ const Signup = () => {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
+                style={{ borderColor: validateMsg.email.color }}
                 value={email}
                 onChangeText={setEmail}
-                placeholder={`${validateMsg.email.title}`}
+                placeholder={validateMsg.email.title}
                 placeholderTextColor="#888"
               />
             </View>
@@ -97,8 +214,9 @@ const Signup = () => {
                 keyboardType="phone-pad"
                 value={phoneNumber}
                 onChangeText={setPhoneNumber}
-                placeholder={`${validateMsg.phoneNumber.title}`}
+                placeholder={validateMsg.phoneNumber.title}
                 placeholderTextColor="#888"
+                style={{ borderColor: validateMsg.phoneNumber.color }}
               />
             </View>
             {/* Password Input with Toggle Visibility */}
@@ -108,7 +226,8 @@ const Signup = () => {
               </Text>
               <TextInput
                 className="w-full h-10 pl-3 pr-12 text-lg text-white bg-gray-900 border-2 border-gray-600 rounded-lg"
-                placeholder={`${validateMsg.password.title}`}
+                placeholder={validateMsg.password.title}
+                style={{ borderColor: validateMsg.password.color }}
                 value={password}
                 onChangeText={SetPassword}
                 secureTextEntry={!passwordVisible}
@@ -132,7 +251,8 @@ const Signup = () => {
               </Text>
               <TextInput
                 className="w-full h-10 pl-3 pr-12 text-lg text-white bg-gray-900 border-2 border-gray-600 rounded-lg"
-                placeholder={`${validateMsg.confirmPass.title}`}
+                placeholder={validateMsg.confirmPass.title}
+                style={{ borderColor: validateMsg.confirmPass.color }}
                 secureTextEntry={!passwordVisible}
                 value={confirmPass}
                 onChangeText={setConfirmPass}
@@ -150,8 +270,8 @@ const Signup = () => {
               </TouchableOpacity>
             </View>
             <Text className="flex p-5 mb-4 text-lg font-light text-center text-white">
-              Don’t have an account{" "}
-              <Text className="font-light text-blue-600">Signup</Text>
+              Already have an account{" "}
+              <Text className="font-light text-blue-600">Sign In</Text>
             </Text>
           </View>
 
