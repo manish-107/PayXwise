@@ -1,7 +1,8 @@
 import { Link } from "expo-router";
 import React from "react";
-import { Text, TextInput, View } from "react-native";
+import { Button, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import CustomeButton from "../../components/customeButton";
 
 const signupnext = () => {
   return (
@@ -54,13 +55,11 @@ const signupnext = () => {
               terms and condition
             </Text>
           </View>
-          <Link
-            style={{ textDecorationLine: "none" }}
-            className="text-xl font-bold bg-[#CBCF00] text-[#000000] rounded-3xl text-center px-8 py-3 underline"
-            href="/signupnext"
-          >
-            {`Create account`}
-          </Link>
+
+          <CustomeButton
+            onPress={console.log("pressed")}
+            text="Create account"
+          />
         </View>
       </View>
     </SafeAreaView>
