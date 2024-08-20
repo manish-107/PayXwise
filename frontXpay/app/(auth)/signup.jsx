@@ -93,7 +93,7 @@ const Signup = () => {
       setValidateMsg((prev) => ({
         ...prev,
         password: {
-          title: "Password should be greater than 4 characters",
+          title: "Enter valid password",
           color: "#aa2121",
         },
       }));
@@ -133,7 +133,7 @@ const Signup = () => {
       setValidateMsg((prev) => ({
         ...prev,
         phoneNumber: {
-          title: "Please enter a valid phone number (at least 10 digits)",
+          title: "Please enter a valid phone number",
           color: "#aa2121",
         },
       }));

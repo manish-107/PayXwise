@@ -1,9 +1,12 @@
 import { useLocalSearchParams } from "expo-router";
-import React from "react";
+import DateTimePicker from "react-native-ui-datepicker";
+import React, { useState } from "react";
 import { SafeAreaView, Text, View, TextInput } from "react-native";
+import dayjs from "dayjs";
 import CustomeButton from "../../components/customeButton";
 
 const SignupNext = () => {
+  const [date, setDate] = useState(dayjs());
   // Accessing passed parameters using useLocalSearchParams
   const { fullName, email, phoneNumber, password } = useLocalSearchParams();
   console.log(fullName, email, phoneNumber, password);
@@ -17,10 +20,11 @@ const SignupNext = () => {
               <Text className="p-1 text-xl font-semibold text-white">
                 Date of Birth
               </Text>
-              <TextInput
-                className="w-full h-10 text-white bg-[#161614] rounded-lg"
-                placeholder="Enter your date of birth"
-                placeholderTextColor="#888"
+
+              <DateTimePicker
+                mode="single"
+                date={date}
+                onChange={(params) => setDate(params.date)}
               />
             </View>
 
