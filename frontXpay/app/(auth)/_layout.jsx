@@ -17,7 +17,7 @@ const authLayout = () => {
             fontWeight: "bold", // Style the header title text
             fontSize: 24,
           },
-          headerTitle: "Sign In", // Custom header title
+          headerTitle: "Previous", // Custom header title
         }}
       />
     </Stack>

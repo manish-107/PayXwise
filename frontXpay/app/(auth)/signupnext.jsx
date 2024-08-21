@@ -1,102 +1,112 @@
 import { useLocalSearchParams } from "expo-router";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-
-import DateTimePicker from "react-native-ui-datepicker";
 import React, { useState } from "react";
-import {
-  SafeAreaView,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
-import dayjs from "dayjs";
+import { Dropdown } from "react-native-element-dropdown";
+import { SafeAreaView, Text, View, StyleSheet, TextInput } from "react-native";
 import CustomeButton from "../../components/customeButton";
 
+const genderData = [
+  { label: "Male", value: "male" },
+  { label: "Female", value: "female" },
+];
+
+const questionData = [
+  { label: "What is your pet's name?", value: "pet" },
+  { label: "What is your favorite book?", value: "book" },
+  { label: "What was the name of your first school?", value: "school" },
+];
+
 const SignupNext = () => {
-  const [date, setDate] = useState(dayjs());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  console.log(date.format("DD-MM-YYYY"));
+  const [gender, setGender] = useState("");
+  const [question, setQuestion] = useState("");
+  const [isFocusGender, setIsFocusGender] = useState(false);
+  const [isFocusQuestion, setIsFocusQuestion] = useState(false);
+  const [answer, setAnswer] = useState("");
+
   // Accessing passed parameters using useLocalSearchParams
   const { fullName, email, phoneNumber, password } = useLocalSearchParams();
-  // console.log(fullName, email, phoneNumber, password);
+
+  const createAccount = () => {
+    if (gender == "" || question == "" || answer == "") {
+      return;
+    }
+    console.log(fullName, email, phoneNumber, password);
+    console.log(gender, question, answer);
+  };
+
   return (
     <SafeAreaView className="h-full bg-[#000000]">
       <View className="flex-1 p-4 mt-4 ">
         <View className="flex flex-col justify-around p-6 mb-4 bg-[#00000054] rounded-3xl">
-          <View className="">
-            {/* Input for Date of Birth */}
-            <Text className="p-1 text-xl font-semibold text-white">
-              Date of Birth
-            </Text>
-
-            {showDatePicker ? (
-              <View style={{ backgroundColor: "white", zIndex: 50 }}>
-                <DateTimePicker
-                  mode="single" // Set mode to 'date' for selecting only date
-                  date={date} // Convert Day.js date to JavaScript Date
-                  onChange={(params) => setDate(params.date)} // Update the state with selected date
-                />
-
-                {/* Display the selected date */}
-                <Text style={{ color: "#000", margin: 0, padding: 10 }}>
-                  Selected Date: {date.format("DD-MM-YYYY")}
-                </Text>
-              </View>
-            ) : (
-              <TouchableOpacity
-                onPress={() => setShowDatePicker(true)}
-                className="inline-flex items-center px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
-                <View className="flex flex-row ">
-                  <Text className="pr-3 text-xl font-semibold text-white ">
-                    Date of Birth
-                  </Text>
-                  <MaterialCommunityIcons
-                    name="calendar"
-                    size={20}
-                    color="white"
-                  />
+          {/* Gender Selection */}
+          <View className="p-1 mb-3">
+            <Text className="p-1 text-xl font-semibold text-white">Gender</Text>
+            <Dropdown
+              style={[
+                styles.dropdown,
+                isFocusGender && { borderColor: "blue" },
+              ]}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              data={genderData}
+              labelField="label"
+              valueField="value"
+              placeholder={!isFocusGender ? "Select Gender" : "..."}
+              value={gender}
+              onFocus={() => setIsFocusGender(true)}
+              onBlur={() => setIsFocusGender(false)}
+              onChange={(item) => {
+                setGender(item.value);
+                setIsFocusGender(false);
+              }}
+              renderItem={(item) => (
+                <View style={styles.item}>
+                  <Text style={styles}>{item.label}</Text>
                 </View>
-              </TouchableOpacity>
-            )}
-
-            {/* Input for Gender */}
-            <View className="p-1 mb-3">
-              <Text className="p-1 text-xl font-semibold text-white">
-                Gender
-              </Text>
-              <TextInput
-                className="w-full h-10 text-white bg-[#161614] rounded-lg"
-                placeholder="Enter your gender"
-                placeholderTextColor="#888"
-              />
-            </View>
-
-            {/* Input for Security Questions */}
-            <View className="p-1 mb-3">
-              <Text className="p-1 text-xl font-semibold text-white">
-                Security Questions
-              </Text>
-              <TextInput
-                className="w-full h-10 mb-2 text-white bg-[#161614] rounded-lg"
-                placeholder="Enter your security question"
-                placeholderTextColor="#888"
-              />
-              <TextInput
-                className="w-full h-10 text-white bg-[#161614] rounded-lg"
-                placeholder="Enter your security answer"
-                placeholderTextColor="#888"
-              />
-            </View>
-
-            <Text className="flex p-5 mb-4 text-lg font-light text-center text-white">
-              Terms and conditions
-            </Text>
+              )}
+            />
           </View>
 
+          {/* Security Questions */}
+          <View className="p-1 mt-3 mb-3">
+            <Text className="p-1 text-xl font-semibold text-white">
+              Security Questions
+            </Text>
+            <Dropdown
+              style={[
+                styles.dropdown,
+                isFocusQuestion && { borderColor: "blue" },
+              ]}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              data={questionData}
+              labelField="label"
+              valueField="value"
+              placeholder={!isFocusQuestion ? "Select Question" : "..."}
+              value={question}
+              onFocus={() => setIsFocusQuestion(true)}
+              onBlur={() => setIsFocusQuestion(false)}
+              onChange={(item) => {
+                setQuestion(item.value);
+                setIsFocusQuestion(false);
+              }}
+              renderItem={(item) => (
+                <View style={styles.item}>
+                  <Text style={styles}>{item.label}</Text>
+                </View>
+              )}
+            />
+          </View>
+          <View className="p-1 mb-3">
+            <Text className="p-1 text-xl font-semibold text-white">Answer</Text>
+            <TextInput
+              className="w-full h-10 pl-2 text-lg text-white bg-black border-2 border-[#6B7280] mb-5  rounded-lg"
+              placeholderTextColor="#888"
+              onChangeText={setAnswer}
+              value={answer}
+            />
+          </View>
           <CustomeButton
-            onPress={() => console.log("Create account pressed")}
+            onPress={() => createAccount()}
             text="Create account"
           />
         </View>
@@ -104,5 +114,35 @@ const SignupNext = () => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  dropdown: {
+    height: 50,
+    borderColor: "gray",
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+    color: "#888",
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: "#fff",
+  },
+  item: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+    borderRadius: 4,
+    backgroundColor: "#fff",
+  },
+  textItem: {
+    fontSize: 16,
+    color: "#000",
+  },
+});
 
 export default SignupNext;
