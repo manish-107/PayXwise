@@ -1,5 +1,5 @@
 import React from "react";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import {
   Text,
   View,
@@ -166,7 +166,10 @@ const Signup = () => {
   };
 
   return (
-    <SafeAreaView className="h-full bg-black">
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: "black" }}
+      className="h-full bg-black"
+    >
       <View className="flex-1 p-4 mt-4">
         <View className="flex flex-col justify-around p-6 mb-4 bg-black bg-opacity-50 rounded-3xl">
           <Text className="text-2xl font-bold text-[#CBCF00]">
@@ -271,7 +274,9 @@ const Signup = () => {
             </View>
             <Text className="flex p-5 mb-4 text-lg font-light text-center text-white">
               Already have an account{" "}
-              <Text className="font-light text-blue-600">Sign In</Text>
+              <Link className="font-light text-blue-600" href="/signin">
+                Sign In
+              </Link>
             </Text>
           </View>
 
