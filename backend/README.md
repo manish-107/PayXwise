@@ -1,6 +1,11 @@
-# npm init -y
+```
+npm install
+npm run dev
+```
 
-# npm install express
+```
+npm run deploy
+```
 
 # Transaction App Database Schema
 
