@@ -11,11 +11,6 @@ app.use(cors({
 }));
 
 
-app.get('/demo',async(c)=>{
-    console.log("hello");
-    return c.json({msg:"hello"});
-})
-
 app.route('/api/v1/users',userRouter);
 
 export default app

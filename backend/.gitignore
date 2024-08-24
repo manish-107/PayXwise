@@ -1,5 +1,6 @@
 # prod
 dist/
+db
 
 # dev
 .yarn/
