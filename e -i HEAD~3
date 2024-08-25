@@ -1,0 +1,187 @@
+[33mcommit 8afeae93a7c4b56276e7e7f96579187ce9bfd3f2[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Sun Aug 25 20:48:54 2024 +0530
+
+    fix
+
+[33mcommit 189735682f60fd4fc5c43a9318bce9a79b3a3d9b[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Sun Aug 25 20:44:15 2024 +0530
+
+    fix
+
+[33mcommit 58e0c13bb91529f3cdc2f033e059bb0c79dc1932[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Sun Aug 25 20:42:15 2024 +0530
+
+    bug fix
+
+[33mcommit c67229418c637e01a93ed52d0ac7e1ba758f9336[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Sun Aug 25 20:40:29 2024 +0530
+
+    init postgresql
+
+[33mcommit 2d5bbede92b273856a2eff64f204de446606962e[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Sun Aug 25 16:27:59 2024 +0530
+
+    prisma db schema
+
+[33mcommit 1bd15d96c75943e1661945e31cb092f53ec6e293[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Sat Aug 24 23:30:27 2024 +0530
+
+    zod validation
+
+[33mcommit 3fcf63e8e898a3ca3f21e459ec8c119113ccae52[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Fri Aug 23 21:19:23 2024 +0530
+
+    hono init ♻
+
+[33mcommit 4b23f38de439a8deeda71c3bbe0e662b745d6b50[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Thu Aug 22 22:47:43 2024 +0530
+
+    signin screen
+
+[33mcommit e18589586a325a35985deaae4274017cb1262c9e[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Wed Aug 21 21:56:21 2024 +0530
+
+    sign up done✅
+
+[33mcommit c8aa14770604ba8f711724d1e4e5ffd2ccf40ecf[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Wed Aug 21 16:30:09 2024 +0530
+
+    cal feature
+
+[33mcommit 188fd977e9a7c29fc90eadddd370de2480dac888[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Tue Aug 20 08:14:08 2024 +0530
+
+    date picker
+
+[33mcommit 4e22c6a729315c31b8de859e0482bfd72c7589a2[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Sun Aug 18 23:09:10 2024 +0530
+
+    passing params fix
+
+[33mcommit 5c88faeacefe910b1debe972ed36c05ff97f51b8[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Sun Aug 18 18:39:16 2024 +0530
+
+    statess
+
+[33mcommit c5ba6c52db77c1a8904246548f8f7795ec0a1cba[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Sun Aug 18 12:24:25 2024 +0530
+
+    signup form design
+
+[33mcommit d48cfcc535da41404774520e0cc76b5689b51fdc[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Sat Aug 17 20:57:40 2024 +0530
+
+    landing page
+
+[33mcommit d08bd75edb7e5d1ce58c9278a0613009a4aefdbc[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Sat Aug 17 11:16:02 2024 +0530
+
+    init backend
+
+[33mcommit 92f9248acce9233ebd371c1fbe1efd0ca63c881d[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Mon Aug 12 21:59:21 2024 +0530
+
+    design fix
+
+[33mcommit 90b86833171e46a7bac2864274ba8ef6e73abb7a[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Sun Aug 11 20:24:02 2024 +0530
+
+    design layouts
+
+[33mcommit 9153c37fb5204fc78eabc5d2d5540f4959e5871a[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Fri Aug 9 23:41:53 2024 +0530
+
+    db design
+
+[33mcommit ded0870e19e06d6b86eec862f0ae384dae510337[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Thu Aug 8 23:41:49 2024 +0530
+
+    some fix
+
+[33mcommit b6fc335a080cea7223aa1853242a0b0edfc949b6[m
+Merge: c2943cc 854d51e
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Tue Jul 16 18:04:28 2024 +0530
+
+    Merge branch 'main' of https://github.com/manish-107/PayXwise
+
+[33mcommit c2943cc8e797b6c5e3b4c6dfa8249b35e189d9ef[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Tue Jul 16 18:02:45 2024 +0530
+
+    demo
+
+[33mcommit 854d51ea4df5412ef48aec1aa724a056a0ad3b89[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Tue Jul 16 11:32:51 2024 +0530
+
+    nav fix
+
+[33mcommit 234ae6800330e5ba497f9c737d078376b39a9d25[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Tue Jul 16 11:26:51 2024 +0530
+
+    folder structure
+
+[33mcommit 8836be982bfd17a8f26d2894d7ed175146f3fa05[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Thu Jun 27 21:08:38 2024 +0530
+
+    some fix
+
+[33mcommit 299832116b8ade10c47455b7ac57ac4ddfab9077[m
+Merge: 8f1ec54 3dd4cfb
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Thu Jun 27 20:49:24 2024 +0530
+
+    Merge branch 'main' of https://github.com/manish-107/PayXwise
+
+[33mcommit 8f1ec54d12535d1392ce07e02ca298c37b888c43[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Thu Jun 27 20:47:12 2024 +0530
+
+    nativewind init
+
+[33mcommit 3dd4cfba8248ffaa34d3298acaa072faddd00ed4[m
+Author: Manish <144528940+manish-107@users.noreply.github.com>
+Date:   Thu Jun 27 18:38:21 2024 +0530
+
+    Update README.md
+
+[33mcommit d7b35156c8a50a400b9a2e2c138a49b48cfbbf9f[m
+Author: manish-107 <creativecrew2676@gmail.com>
+Date:   Thu Jun 27 18:36:07 2024 +0530
+
+    project setup
+
+[33mcommit 3cd992014d8866602ae5e0931105c411510da476[m
+Author: Manish <144528940+manish-107@users.noreply.github.com>
+Date:   Thu Jun 27 17:43:04 2024 +0530
+
+    Update README.md
+
+[33mcommit 5638f4994bbef802b92aa0913469de7bf9efa1ac[m
+Author: Manish <144528940+manish-107@users.noreply.github.com>
+Date:   Thu Jun 27 17:42:10 2024 +0530
+
+    Initial commit
