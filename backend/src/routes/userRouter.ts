@@ -6,7 +6,7 @@ import { withAccelerate } from "@prisma/extension-accelerate";
 export const userRouter = new Hono<{
   Bindings: {
     DATABASE_URL: string;
-    JWT_SECRET: string;
+    // JWT_SECRET: string;
   };
 }>();
 
