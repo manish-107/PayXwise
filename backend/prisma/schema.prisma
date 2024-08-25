@@ -12,3 +12,61 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  user_id                String               @id @default(uuid())
+  email                  String               @unique
+  fullName               String
+  phoneNumber            Int
+  password               String
+  gender                 String
+  securityQ              String
+  securityA              String
+  accounts               Account[]
+  expanses               Expanses[]
+  transactionDetailsFrom TransactionDetails[] @relation("TransactionFrom")
+  transactionDetailsTo   TransactionDetails[] @relation("TransactionTo")
+}
+
+model Account {
+  acc_no       String   @id
+  user_id      String
+  bankName     String
+  balance      Decimal
+  created_date DateTime @default(now())
+  updated_date DateTime @updatedAt
+  user         User     @relation(fields: [user_id], references: [user_id])
+}
+
+model ExpanseCategory {
+  expcat_no    Int        @id @default(autoincrement())
+  expcat_name  String
+  created_date DateTime   @default(now())
+  expanses     Expanses[]
+}
+
+model Expanses {
+  exp_id       Int      @id @default(autoincrement())
+  expcat_no    Int
+  user_id      String
+  amount       Decimal
+  expanseType  String
+  expanse_date DateTime @default(now())
+
+  user            User            @relation(fields: [user_id], references: [user_id])
+  expanseCategory ExpanseCategory @relation(fields: [expcat_no], references: [expcat_no])
+}
+
+model TransactionDetails {
+  trans_id    String   @id
+  from_id     String
+  to_id       String
+  amount      Decimal
+  description String
+  trans_date  DateTime @default(now())
+  trans_type  String
+  status      String
+
+  from_user User @relation("TransactionFrom", fields: [from_id], references: [user_id])
+  to_user   User @relation("TransactionTo", fields: [to_id], references: [user_id])
+}
