@@ -115,19 +115,7 @@ userRouter.post("/signup", async (c) => {
   }
 });
 
-userRouter.get("/getUser", async (c) => {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env?.DATABASE_URL,
-  }).$extends(withAccelerate());
-
-  try {
-    const allUsers = await prisma.user.findMany({});
-    return c.json({ users: allUsers });
-  } catch (error) {
-    return c.json({ message: "error occured" });
-  }
-});
-
+//signin route
 userRouter.post("/signin", async (c) => {
   const body = await c.req.json();
 
@@ -145,12 +133,53 @@ userRouter.post("/signin", async (c) => {
       );
     }
 
-    const isEmailExists = await prisma.user.findUnique({ where: body.email });
+    const checkEmail = await prisma.user.findUnique({
+      where: { email: body.email },
+    });
 
-    if (!isEmailExists) {
+    if (!checkEmail) {
+      return c.json({ error: "email doesnt exists" });
+    }
+
+    const userData = await prisma.user.findFirst({
+      where: {
+        email: body.email,
+        password: body.password,
+      },
+    });
+
+    if (!userData) {
       return c.json({ message: "User does'nt exists" });
     }
+
+    const jwt = await sign(
+      {
+        id: userData.user_id,
+      },
+      c.env.JWT_SECRET
+    );
+
+    return c.json({ token: jwt });
   } catch (error) {
     return c.json({ message: "Something went wrong" });
+  }
+});
+
+//get all the users
+userRouter.get("/getUser", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    const allUsers = await prisma.user.findMany({
+      include: {
+        accounts: true,
+      },
+    });
+
+    return c.json({ users: allUsers });
+  } catch (error) {
+    return c.json({ message: "error occured" });
   }
 });
