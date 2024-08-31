@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client/edge";
 import { Hono } from "hono";
 import z from "zod";
+import { sign } from "hono/jwt";
 import { v4 as uuidv4 } from "uuid";
 import { withAccelerate } from "@prisma/extension-accelerate";
 
@@ -22,12 +23,19 @@ const signupInput = z.object({
   bankName: z.string(),
 });
 
+const signinInput = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+//sign up route
 userRouter.post("/signup", async (c) => {
   const body = await c.req.json();
 
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
+
   try {
     const parseResult = signupInput.safeParse(body);
 
@@ -36,6 +44,14 @@ userRouter.post("/signup", async (c) => {
         { error: "Invalid input", details: parseResult.error.errors },
         400
       );
+    }
+
+    const existingEmail = await prisma.user.findUnique({
+      where: { email: body.email },
+    });
+
+    if (existingEmail) {
+      return c.json({ msg: "email already exists" });
     }
 
     const generatecharid = (): string => {
@@ -95,27 +111,46 @@ userRouter.post("/signup", async (c) => {
     return c.json({ msg: result });
   } catch (error) {
     console.log(error);
+    return c.json({ msg: error });
   }
 });
 
-// userRouter.get("/getUser", async (c) => {
-//   const body = c.req.json();
-//   const prisma = new PrismaClient({
-//     datasourceUrl: c.env?.DATABASE_URL,
-//   }).$extends(withAccelerate());
-//   try {
-//     const createUser = await prisma.user.create({
-//       data: {
-//         fullName: body.fullName,
-//         email: body.email,
-//         phoneNumber: body.phoneNumber,
-//         password: body.password,
-//         gender: body.gender,
-//         securityA: body.securityA,
-//         securityQ: body.securityQ,
-//       },
-//       select: { user_id: true },
-//     });
-//   } catch (error) {}
-//   return c.json({ msg: "hello" });
-// });
+userRouter.get("/getUser", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    const allUsers = await prisma.user.findMany({});
+    return c.json({ users: allUsers });
+  } catch (error) {
+    return c.json({ message: "error occured" });
+  }
+});
+
+userRouter.post("/signin", async (c) => {
+  const body = await c.req.json();
+
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    const parseResult = signinInput.safeParse(body);
+
+    if (!parseResult.success) {
+      return c.json(
+        { error: "Invalid input", details: parseResult.error.errors },
+        400
+      );
+    }
+
+    const isEmailExists = await prisma.user.findUnique({ where: body.email });
+
+    if (!isEmailExists) {
+      return c.json({ message: "User does'nt exists" });
+    }
+  } catch (error) {
+    return c.json({ message: "Something went wrong" });
+  }
+});
