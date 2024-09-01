@@ -1,6 +1,8 @@
 import { Hono } from "hono";
 import { userRouter } from "./routes/userRouter";
 import { cors } from "hono/cors";
+import { expanseRouter } from "./routes/expanseRouter";
+import { transactionRoute } from "./routes/transactionRouter";
 
 export const app = new Hono();
 
@@ -13,5 +15,7 @@ app.use(
 );
 
 app.route("/api/v1/users", userRouter);
+app.route("/api/v1/expanse", expanseRouter);
+app.route("/api/transaction", transactionRoute);
 
 export default app;

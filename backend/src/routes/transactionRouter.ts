@@ -15,6 +15,11 @@ export const transactionRoute = new Hono<{
 
 transactionRoute.use("/*", authMiddleware);
 
+//touser fromuser amount description expansename
+
+//account table -amount +amount
+//expanseTable
+
 transactionRoute.post("/sentMoney", async (c) => {
   try {
     const body = await c.req.json();
