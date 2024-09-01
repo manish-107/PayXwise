@@ -3,7 +3,7 @@ import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
 import z from "zod";
 import { sign } from "hono/jwt";
-import { v4 as uuidv4 } from "uuid";
+import { generatecharid } from "../middleware/generateUniqueId";
 
 export const userRouter = new Hono<{
   Bindings: {
@@ -53,13 +53,6 @@ userRouter.post("/signup", async (c) => {
     if (existingEmail) {
       return c.json({ msg: "email already exists" });
     }
-
-    const generatecharid = (): string => {
-      const uuid = uuidv4().replace(/-/g, "");
-      console.log(uuid);
-      const elevenCharId: string = uuid.substring(0, 15);
-      return elevenCharId;
-    };
 
     const generateUniqueAccoutId = async (): Promise<string> => {
       let isUnique: Boolean = false;
