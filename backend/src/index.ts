@@ -16,6 +16,6 @@ app.use(
 
 app.route("/api/v1/users", userRouter);
 app.route("/api/v1/expanse", expanseRouter);
-app.route("/api/transaction", transactionRoute);
+app.route("/api/v1/transaction", transactionRoute);
 
 export default app;

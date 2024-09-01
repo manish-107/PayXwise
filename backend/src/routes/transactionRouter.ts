@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
+import Decimal from "decimal.js";
 import z from "zod";
 import { authMiddleware } from "../middleware/auth";
 import { generatecharid } from "../middleware/generateUniqueId";
@@ -58,92 +59,96 @@ transactionRoute.post("/sentMoney", async (c) => {
       return transID;
     };
 
-    const sendMoneyResult = await prisma.$transaction(async (prisma) => {
-      // Find the "from" account
-      const findFromAcc = await prisma.account.findUnique({
-        where: {
-          acc_no: body.fromAccNo,
-        },
-      });
+    const sendMoneyResult = await prisma.$transaction(
+      async (prisma) => {
+        // Find the "from" account
+        const findFromAcc = await prisma.account.findUnique({
+          where: { acc_no: body.fromAccNo },
+        });
 
-      if (!findFromAcc) {
-        return c.json({ message: "From account not found" }, 404);
-      }
+        if (!findFromAcc) {
+          return c.json({ message: "From account not found" }, 404);
+        }
 
-      // Find the "to" account
-      const findToAcc = await prisma.account.findUnique({
-        where: {
-          acc_no: body.toAccNo,
-        },
-      });
+        // Find the "to" account
+        const findToAcc = await prisma.account.findUnique({
+          where: { acc_no: body.toAccNo },
+        });
 
-      if (!findToAcc) {
-        return c.json({ message: "To account not found" }, 404);
-      }
+        if (!findToAcc) {
+          return c.json({ message: "To account not found" }, 404);
+        }
 
-      // Check if the "from" account has enough balance
-      if (findFromAcc.balance.lessThan(body.amount)) {
-        return c.json({ message: "Insufficient balance" }, 400);
-      }
+        // Convert balances to Decimal.js instances
+        const fromBalance = new Decimal(findFromAcc.balance);
+        const toBalance = new Decimal(findToAcc.balance);
+        const amount = new Decimal(body.amount);
 
-      // Update balances
-      const fromNewBalance = findFromAcc.balance.minus(body.amount); // Deduct from "from" account
-      const toNewBalance = findToAcc.balance.plus(body.amount); // Add to "to" account
+        // Check if the "from" account has enough balance
+        if (fromBalance.lessThan(amount)) {
+          return c.json({ message: "Insufficient balance" }, 400);
+        }
 
-      // Update the "from" account with the new balance
-      const updateFromAcc = await prisma.account.update({
-        where: { acc_no: body.fromAccNo },
-        data: { balance: fromNewBalance },
-      });
+        // Update balances
+        const fromNewBalance = fromBalance.minus(amount).toFixed();
+        const toNewBalance = toBalance.plus(amount).toFixed();
 
-      // Update the "to" account with the new balance
-      const updateToAcc = await prisma.account.update({
-        where: { acc_no: body.toAccNo },
-        data: { balance: toNewBalance },
-      });
+        // Update the "from" account with the new balance
+        const updateFromAcc = await prisma.account.update({
+          where: { acc_no: body.fromAccNo },
+          data: { balance: fromNewBalance },
+        });
 
-      // Add a debit record for the sender
-      const addExpanseSender = await prisma.expanses.create({
-        data: {
-          expcat_no: body.expcat_no,
-          user_id: userId,
-          amount: body.amount,
-          expanseType: "debit",
-        },
-      });
+        // Update the "to" account with the new balance
+        const updateToAcc = await prisma.account.update({
+          where: { acc_no: body.toAccNo },
+          data: { balance: toNewBalance },
+        });
 
-      // Add a credit record for the receiver
-      const addExpanseReceiver = await prisma.expanses.create({
-        data: {
-          expcat_no: body.expcat_no,
-          user_id: findToAcc.user_id,
-          amount: body.amount,
-          expanseType: "credit",
-        },
-      });
+        // Add a debit record for the sender
+        const addExpanseSender = await prisma.expanses.create({
+          data: {
+            expcat_no: body.expcat_no,
+            user_id: userId,
+            amount: body.amount,
+            expanseType: "debit",
+          },
+        });
 
-      // Generate and store the transaction details
-      const transcID = await generateUniqueTransactionId();
-      const addTransactionDetails = await prisma.transactionDetails.create({
-        data: {
-          trans_id: transcID,
-          from_id: userId,
-          to_id: findToAcc.user_id,
-          amount: body.amount,
-          description: body.description ?? "N/A",
-          trans_type: "credit",
-          status: "success",
-        },
-      });
+        // Add a credit record for the receiver
+        const addExpanseReceiver = await prisma.expanses.create({
+          data: {
+            expcat_no: body.expcat_no,
+            user_id: findToAcc.user_id,
+            amount: body.amount,
+            expanseType: "credit",
+          },
+        });
 
-      return {
-        updateFromAcc,
-        updateToAcc,
-        addExpanseSender,
-        addExpanseReceiver,
-        addTransactionDetails,
-      };
-    });
+        // Generate and store the transaction details
+        const transcID = await generateUniqueTransactionId();
+        const addTransactionDetails = await prisma.transactionDetails.create({
+          data: {
+            trans_id: transcID,
+            from_id: userId,
+            to_id: findToAcc.user_id,
+            amount: body.amount,
+            description: body.description ?? "N/A",
+            trans_type: "credit",
+            status: "success",
+          },
+        });
+
+        return {
+          updateFromAcc,
+          updateToAcc,
+          addExpanseSender,
+          addExpanseReceiver,
+          addTransactionDetails,
+        };
+      },
+      { timeout: 10000 } // Set timeout to 10 seconds (increase if needed)
+    );
 
     return c.json({ success: true, data: sendMoneyResult });
   } catch (error) {
