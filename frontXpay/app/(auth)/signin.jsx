@@ -1,6 +1,6 @@
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import CustomeButton from "../../components/customeButton.jsx";
@@ -9,8 +9,11 @@ const signin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = React.useState(false);
-
+  const route = useRouter();
   const signIn = () => {
+    route.push({
+      pathname: "/dashboard",
+    });
     console.log("sign in");
   };
 
