@@ -1,66 +1,83 @@
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, StyleSheet } from "react-native";
 import React from "react";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Foundation from "@expo/vector-icons/Foundation";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Tabs } from "expo-router";
 import iconone from "../../assets/icon.png";
 
 const TabIcon = ({ icon, color, name }) => {
   return (
-    <View style={{ alignItems: "center" }}>
-      {/* <Image
+    <View style={styles.iconContainer}>
+      <Image
         source={icon}
         resizeMode="contain"
-        style={{ width: 24, height: 24, tintColor: color }} // Adjusted styles
-      /> */}
-      <Text style={{ color }}>{name}</Text>
+        style={[styles.iconImage, { tintColor: color }]}
+      />
+      <Text style={[styles.iconText, { color }]}>{name}</Text>
     </View>
   );
 };
 
 const TabsLayout = () => {
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        tabBarStyle: styles.tabBarStyle,
+        tabBarActiveTintColor: "#D5EB4D",
+        tabBarInactiveTintColor: "white",
+      }}
+    >
       <Tabs.Screen
-        name="home"
+        name="dashboard"
         options={{
-          title: "Home",
+          title: "Dashboard",
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <TabIcon icon={iconone} name="Home" color={color} />
+            <AntDesign name="home" size={24} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="Scan"
         options={{
-          title: "Profile",
+          title: "Scan",
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <TabIcon icon={iconone} name="Profile" color={color} />
+            <MaterialIcons name="qr-code-scanner" size={36} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="settings"
+        name="expanse"
         options={{
-          title: "Settings",
+          title: "Expanse",
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <TabIcon icon={iconone} name="Settings" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="notifications"
-        options={{
-          title: "Notifications",
-          headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <TabIcon icon={iconone} name="Notifications" color={color} />
+            <Foundation name="graph-bar" size={24} color={color} />
           ),
         }}
       />
     </Tabs>
   );
 };
+
+const styles = StyleSheet.create({
+  tabBarStyle: {
+    backgroundColor: "black",
+    paddingTop: 10,
+    height: 70, // Optional: Adjust height if needed
+  },
+  iconContainer: {
+    alignItems: "center",
+  },
+  iconImage: {
+    width: 24,
+    height: 24,
+  },
+  iconText: {
+    fontSize: 12,
+  },
+});
 
 export default TabsLayout;

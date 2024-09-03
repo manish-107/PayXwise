@@ -1,12 +1,12 @@
 import { Text, View } from "react-native";
 import React from "react";
 
-const notifications = () => {
+const Scan = () => {
   return (
-    <View className="flex-1 items-center justify-center bg-red">
+    <View className="items-center justify-center flex-1 bg-red">
       <Text>profile</Text>
     </View>
   );
 };
 
-export default notifications;
+export default Scan;

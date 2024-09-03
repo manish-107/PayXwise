@@ -1,7 +1,7 @@
 import { View, Text } from "react-native";
 import React from "react";
 
-const settings = () => {
+const expanse = () => {
   return (
     <View>
       <Text>transcation</Text>
@@ -9,4 +9,4 @@ const settings = () => {
   );
 };
 
-export default settings;
+export default expanse;
