@@ -4,7 +4,7 @@ import React from "react";
 const Scan = () => {
   return (
     <View className="items-center justify-center flex-1 bg-red">
-      <Text>profile</Text>
+      <Text>Scan</Text>
     </View>
   );
 };

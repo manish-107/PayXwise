@@ -16,8 +16,8 @@ const recentPeople = [
 
 const DashboardPeople = () => {
   return (
-    <View className="bg-[#C2C2C2] h-fit m-5 rounded-lg p-4">
-      <Text className="mb-4 text-xl font-bold text-black">People</Text>
+    <View className="bg-[#9a96963b] h-fit m-5 rounded-lg p-4">
+      <Text className="pl-3 mb-4 text-xl font-bold text-black">People</Text>
       <View className="flex flex-row flex-wrap justify-between">
         {recentPeople.map((person) => (
           <Link

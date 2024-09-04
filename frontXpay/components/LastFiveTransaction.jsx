@@ -20,20 +20,32 @@ const LastTransaction = [
     name: "Akhil",
     datetime: "Sep 03, 2024",
   },
+  {
+    id: 4,
+    amount: "30000",
+    name: "Akhil",
+    datetime: "Sep 03, 2024",
+  },
+  {
+    id: 5,
+    amount: "30000",
+    name: "Akhil",
+    datetime: "Sep 03, 2024",
+  },
 ];
 
 const LastFiveTransaction = () => {
   return (
     <View className="bg-[#D5EB4D] h-fit m-5 rounded-lg">
-      <Text className="pt-3 pl-6 text-xl font-bold text-black">
-        Last 5 transactions
+      <Text className="pt-5 pl-10 text-xl font-bold text-black">
+        Transactions
       </Text>
       <View className="flex flex-col justify-between p-3">
         {LastTransaction.map((transaction) => {
           return (
             <View
               key={transaction.id}
-              className="p-5 mb-5 ml-5 mr-5 bg-white shadow-lg rounded-2xl"
+              className="p-3 mb-5 ml-3 mr-3 bg-white shadow-lg rounded-2xl"
               style={{
                 backgroundColor: "#1F1F1F", // Dark background
                 shadowColor: "#000",

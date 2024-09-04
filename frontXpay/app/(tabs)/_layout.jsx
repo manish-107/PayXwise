@@ -4,7 +4,6 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Foundation from "@expo/vector-icons/Foundation";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Tabs } from "expo-router";
-import iconone from "../../assets/icon.png";
 
 const TabIcon = ({ icon, color, name }) => {
   return (
