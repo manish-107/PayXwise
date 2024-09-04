@@ -41,7 +41,7 @@ const Index = () => {
           <Link
             style={{ textDecorationLine: "none" }}
             className="text-xl font-bold bg-[#CBCF00] text-[#000000] rounded-3xl text-center px-8 py-3 underline"
-            href="/dashboard"
+            href="/signup"
           >
             GetStarted
           </Link>
