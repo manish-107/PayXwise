@@ -97,7 +97,7 @@ const Dashboard = () => {
               borderRadius: 10,
               alignItems: "center",
             }}
-            onPress={() => router.push("/payPage")}
+            onPress={() => router.push("/transferMoney")}
           >
             <FontAwesome5 name="users" size={36} color="black" />
             <Text style={{ fontSize: 12, color: "black", textAlign: "center" }}>
