@@ -46,13 +46,13 @@ userRouter.post("/signup", async (c) => {
       );
     }
 
-    const existingEmail = await prisma.user.findUnique({
-      where: { email: body.email },
-    });
+    // const existingEmail = await prisma.user.findUnique({
+    //   where: { email: body.email },
+    // });
 
-    if (existingEmail) {
-      return c.json({ msg: "email already exists" });
-    }
+    // if (existingEmail) {
+    //   return c.json({ msg: "email already exists" });
+    // }
 
     const generateUniqueAccoutId = async (): Promise<string> => {
       let isUnique: Boolean = false;
@@ -102,7 +102,10 @@ userRouter.post("/signup", async (c) => {
     });
 
     return c.json({ msg: result });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === "P2002") {
+      return c.json({ msg: "Email already exist" });
+    }
     console.log(error);
     return c.json({ msg: error });
   }
@@ -131,7 +134,7 @@ userRouter.post("/signin", async (c) => {
     });
 
     if (!checkEmail) {
-      return c.json({ error: "email doesnt exists" });
+      return c.json({ error: "email or password is incorrect" });
     }
 
     const userData = await prisma.user.findFirst({
@@ -142,7 +145,7 @@ userRouter.post("/signin", async (c) => {
     });
 
     if (!userData) {
-      return c.json({ message: "User does'nt exists" });
+      return c.json({ message: "email or password is incorrect" });
     }
 
     const jwt = await sign(
