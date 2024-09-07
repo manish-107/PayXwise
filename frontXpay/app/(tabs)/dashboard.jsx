@@ -14,6 +14,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import DashboardPeople from "../../components/DashBoardPeople.jsx";
 import LastFiveTransaction from "../../components/LastFiveTransaction.jsx";
+import SearchInput from "../../components/SearchInput.jsx";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -22,6 +23,7 @@ const Dashboard = () => {
       {/* Wrap content inside ScrollView */}
       <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
         <View className="bg-[#D5EB4D] rounded-3xl h-fit ml-3 mr-3 flex">
+          <SearchInput />
           <View className="flex flex-col pt-10 pb-4 pl-6">
             <Text className="text-xl font-bold">Welcome</Text>
             <Text className="text-2xl font-extrabold">Manish</Text>
