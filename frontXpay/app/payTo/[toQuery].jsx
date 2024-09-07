@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -55,6 +55,7 @@ const SendToUser = () => {
 
   const payAmount = () => {
     console.log(amount, description, expense, toQuery);
+    router.push("payTo/PayDetails");
   };
 
   useEffect(() => {
