@@ -21,25 +21,51 @@ const SearchInput = ({ initialQuery }) => {
   };
 
   return (
-    <View className="flex flex-row items-center h-16 px-4 m-4 space-x-4 border-2 bg-black-100 rounded-2xl border-black-200 focus:border-secondary bg-slate-200">
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        height: 56,
+        paddingHorizontal: 16,
+        margin: 16,
+        borderRadius: 30,
+        backgroundColor: "#E5E7EB", // Light background for input
+        borderWidth: 2,
+        borderColor: "#D1D5DB", // Soft border color
+        shadowColor: "#000", // Shadow for iOS
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3, // Shadow for Android
+      }}
+    >
       <TextInput
-        className="text-base mt-0.5 text-black flex-1 font-pregular"
+        style={{
+          flex: 1,
+          fontSize: 16,
+          color: "#000",
+          fontFamily: "Roboto",
+        }}
         value={query}
-        placeholder="Search a video topic"
-        placeholderTextColor="#000"
+        placeholder="Search for topics or videos"
+        placeholderTextColor="#6B7280" // Lighter placeholder color
         onChangeText={setQuery}
         onSubmitEditing={handleSearch}
         returnKeyType="search"
       />
 
       <TouchableOpacity
-        style={{ padding: 15, paddingLeft: 30 }}
+        style={{
+          paddingHorizontal: 12,
+          paddingVertical: 10,
+          marginLeft: 10,
+        }}
         onPress={handleSearch}
       >
         <MaterialCommunityIcons
           name="account-search-outline"
-          size={24}
-          color="black"
+          size={28}
+          color="#1F2937" // Darker icon color
         />
       </TouchableOpacity>
     </View>

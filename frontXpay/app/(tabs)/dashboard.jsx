@@ -24,7 +24,7 @@ const Dashboard = () => {
       <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
         <View className="bg-[#D5EB4D] rounded-3xl h-fit ml-3 mr-3 flex">
           <SearchInput />
-          <View className="flex flex-col pt-10 pb-4 pl-6">
+          <View className="flex flex-col pt-2 pb-4 pl-6">
             <Text className="text-xl font-bold">Welcome</Text>
             <Text className="text-2xl font-extrabold">Manish</Text>
           </View>
