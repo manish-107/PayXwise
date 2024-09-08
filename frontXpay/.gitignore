@@ -4,6 +4,7 @@
 node_modules/
 %ProgramData%/
 # Expo
+%ProgramData%/
 .expo/
 dist/
 web-build/
