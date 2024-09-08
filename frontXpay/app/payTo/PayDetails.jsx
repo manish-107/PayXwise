@@ -1,11 +1,25 @@
-import { View, Text } from "react-native";
-import React from "react";
+import { View, Text, BackHandler } from "react-native";
+import React, { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useNavigation } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { router } from "expo-router";
 
 const PayDetails = () => {
+  // const navigation = useNavigation();
+  // Handle hardware back button to navigate to the dashboard
+  useEffect(() => {
+    const onBackPress = () => {
+      router.push("(tabs)/dashboard"); // Navigate to Dashboard
+      return true; // Prevent default back action
+    };
+
+    BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+    return () =>
+      BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+  }, [router]);
+
   return (
     <SafeAreaView className="justify-between flex-1 p-6 bg-gray-100">
       {/* Header Section */}
@@ -19,9 +33,8 @@ const PayDetails = () => {
         </View>
 
         {/* Transaction Summary */}
-        <View className="p-4 mb-4 rounded-lg ">
+        <View className="p-4 mb-4 rounded-lg">
           <View className="items-center">
-            {/* <FontAwesome name="rupee" size={36} color="black" /> */}
             <Text className="mt-2 text-4xl font-bold">₹ 260</Text>
             <Text className="mt-2 text-gray-500">Paid to Manish</Text>
             <Text className="text-gray-600">+91 8765654587</Text>
@@ -30,7 +43,7 @@ const PayDetails = () => {
       </View>
 
       {/* Bank Info */}
-      <View className="p-4 mb-4 bg-white rounded-lg ">
+      <View className="p-4 mb-4 bg-white rounded-lg">
         <View className="mb-4">
           <Text className="text-lg font-bold">Transaction Details</Text>
         </View>
