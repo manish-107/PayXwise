@@ -1,7 +1,11 @@
 import { Stack, Tabs } from "expo-router";
 import { Text, TouchableOpacity } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useNavigation } from "expo-router";
 
 const detailLayout = () => {
+  const navigation = useNavigation();
   return (
     <Stack>
       <Stack.Screen
@@ -51,12 +55,12 @@ const detailLayout = () => {
           headerTitle: "transferMoney", // Custom header title
           headerLeft: () => (
             <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Text style={{ color: "#fcf955", fontSize: 24 }}>←</Text>
+              <Ionicons name="arrow-back" size={24} color="#fcf955" />
             </TouchableOpacity>
           ),
           headerRight: () => (
-            <TouchableOpacity onPress={() => navigation.navigate("SomeScreen")}>
-              <Text style={{ color: "#fcf955", fontSize: 24 }}>X</Text>
+            <TouchableOpacity onPress={() => navigation.navigate("dashboard")}>
+              <FontAwesome name="close" size={24} color="#fcf955" />
             </TouchableOpacity>
           ),
           headerTitleAlign: "center", // Center the title
