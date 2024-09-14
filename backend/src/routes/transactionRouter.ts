@@ -158,3 +158,75 @@ transactionRoute.post("/sentMoney", async (c) => {
     await prisma.$disconnect();
   }
 });
+
+transactionRoute.get("/search/:query", async (c) => {
+  const searchPrams = c.req.param("query");
+
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    const searchUser = await prisma.user.findMany({
+      where: {
+        fullName: {
+          contains: searchPrams,
+          mode: "insensitive",
+        },
+      },
+      select: {
+        user_id: true,
+        email: true,
+        fullName: true,
+        phoneNumber: true,
+      },
+    });
+
+    console.log("[search]", searchUser);
+
+    return c.json({
+      user: {
+        searchUser,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return c.json({
+      error: error,
+    });
+  }
+});
+
+transactionRoute.get("/transactionHistory/:userId", async (c) => {
+  const userId: string = c.req.param("userId");
+
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    const transacHistory = await prisma.transactionDetails.findMany({
+      where: {
+        from_id: userId,
+      },
+      orderBy: {
+        trans_date: "desc", // Order by transaction date in descending order
+      },
+      take: 5, // Get the last 5 transactions
+    });
+
+    return c.json({
+      user: {
+        transacHistory,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return c.json(
+      {
+        error: error,
+      },
+      500
+    );
+  }
+});

@@ -1,10 +1,14 @@
 ```
+
 npm install
 npm run dev
+
 ```
 
 ```
+
 npm run deploy
+
 ```
 
 # Transaction App Database Schema
@@ -101,3 +105,7 @@ This database schema is designed to handle user management, transaction recordin
 ## Additional Information
 
 This schema is part of a larger project that includes a React Native frontend and a backend built using Hono.js, Cloudflare Workers, Prisma, and PostgreSQL. The schema is designed to be flexible and scalable, accommodating the needs of a transaction-based application.
+
+```
+
+```
