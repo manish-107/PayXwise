@@ -2,7 +2,7 @@
 
 ## 1. Sign In
 
-### **URL:** `https://your-api-url.com/signin`
+### **URL:** `http://127.0.0.1:8787/api/v1/users/signin`
 
 - **Method:** `POST`
 - **Description:** Allows a user to sign in to their account.
@@ -11,14 +11,14 @@
 
 ```json
 {
-  "email": "user@example.com",
-  "password": "password123"
+  "email": "john.doe@example.com",
+  "password": "securePassword"
 }
 ```
 
-## 1. Sign Up
+## 2. Sign Up
 
-### **URL:** `https://your-api-url.com/signin`
+### **URL:** `http://127.0.0.1:8787/api/v1/users/signup`
 
 - **Method:** `POST`
 - **Description:** Allows a user to sign in to their account.

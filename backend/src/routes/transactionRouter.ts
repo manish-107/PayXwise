@@ -20,11 +20,11 @@ transactionRoute.use("/*", authMiddleware);
 
 transactionRoute.post("/sentMoney", async (c) => {
   const userId = c.get("userId");
-  const body = await c.req.json();
-
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
+
+  const body = await c.req.json();
 
   // Input validation for the body
   const schema = z.object({
@@ -61,27 +61,23 @@ transactionRoute.post("/sentMoney", async (c) => {
 
     const sendMoneyResult = await prisma.$transaction(
       async (prisma) => {
-        // Find the "from" account
-        const findFromAcc = await prisma.account.findUnique({
-          where: { acc_no: body.fromAccNo },
-        });
+        // Fetch accounts in parallel to reduce waiting time
+        const [fromAcc, toAcc] = await Promise.all([
+          prisma.account.findUnique({
+            where: { acc_no: body.fromAccNo },
+          }),
+          prisma.account.findUnique({
+            where: { acc_no: body.toAccNo },
+          }),
+        ]);
 
-        if (!findFromAcc) {
-          return c.json({ message: "From account not found" }, 404);
-        }
-
-        // Find the "to" account
-        const findToAcc = await prisma.account.findUnique({
-          where: { acc_no: body.toAccNo },
-        });
-
-        if (!findToAcc) {
-          return c.json({ message: "To account not found" }, 404);
+        if (!fromAcc || !toAcc) {
+          return c.json({ message: "Account not found" }, 404);
         }
 
         // Convert balances to Decimal.js instances
-        const fromBalance = new Decimal(findFromAcc.balance);
-        const toBalance = new Decimal(findToAcc.balance);
+        const fromBalance = new Decimal(fromAcc.balance);
+        const toBalance = new Decimal(toAcc.balance);
         const amount = new Decimal(body.amount);
 
         // Check if the "from" account has enough balance
@@ -89,49 +85,49 @@ transactionRoute.post("/sentMoney", async (c) => {
           return c.json({ message: "Insufficient balance" }, 400);
         }
 
-        // Update balances
+        // Compute new balances outside of the database operations
         const fromNewBalance = fromBalance.minus(amount).toFixed();
         const toNewBalance = toBalance.plus(amount).toFixed();
 
-        // Update the "from" account with the new balance
-        const updateFromAcc = await prisma.account.update({
-          where: { acc_no: body.fromAccNo },
-          data: { balance: fromNewBalance },
-        });
+        // Update balances in parallel to reduce transaction time
+        const [updateFromAcc, updateToAcc] = await Promise.all([
+          prisma.account.update({
+            where: { acc_no: body.fromAccNo },
+            data: { balance: fromNewBalance },
+          }),
+          prisma.account.update({
+            where: { acc_no: body.toAccNo },
+            data: { balance: toNewBalance },
+          }),
+        ]);
 
-        // Update the "to" account with the new balance
-        const updateToAcc = await prisma.account.update({
-          where: { acc_no: body.toAccNo },
-          data: { balance: toNewBalance },
-        });
+        // Create expense records in parallel
+        const [addExpanseSender, addExpanseReceiver] = await Promise.all([
+          prisma.expanses.create({
+            data: {
+              expcat_no: body.expcat_no,
+              user_id: userId,
+              amount: body.amount,
+              expanseType: "debit",
+            },
+          }),
+          prisma.expanses.create({
+            data: {
+              expcat_no: body.expcat_no,
+              user_id: toAcc.user_id,
+              amount: body.amount,
+              expanseType: "credit",
+            },
+          }),
+        ]);
 
-        // Add a debit record for the sender
-        const addExpanseSender = await prisma.expanses.create({
-          data: {
-            expcat_no: body.expcat_no,
-            user_id: userId,
-            amount: body.amount,
-            expanseType: "debit",
-          },
-        });
-
-        // Add a credit record for the receiver
-        const addExpanseReceiver = await prisma.expanses.create({
-          data: {
-            expcat_no: body.expcat_no,
-            user_id: findToAcc.user_id,
-            amount: body.amount,
-            expanseType: "credit",
-          },
-        });
-
-        // Generate and store the transaction details
+        // Generate transaction details and store them
         const transcID = await generateUniqueTransactionId();
         const addTransactionDetails = await prisma.transactionDetails.create({
           data: {
             trans_id: transcID,
             from_id: userId,
-            to_id: findToAcc.user_id,
+            to_id: toAcc.user_id,
             amount: body.amount,
             description: body.description ?? "N/A",
             trans_type: "credit",
@@ -154,23 +150,20 @@ transactionRoute.post("/sentMoney", async (c) => {
   } catch (error) {
     console.error("Transaction Error:", error);
     return c.json({ error: "Transaction failed" }, 500);
-  } finally {
-    await prisma.$disconnect();
   }
 });
 
 transactionRoute.get("/search/:query", async (c) => {
-  const searchPrams = c.req.param("query");
-
+  const searchParams = c.req.param("query");
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
-
   try {
+    // Optimize search by only selecting required fields
     const searchUser = await prisma.user.findMany({
       where: {
         fullName: {
-          contains: searchPrams,
+          contains: searchParams,
           mode: "insensitive",
         },
       },
@@ -182,29 +175,22 @@ transactionRoute.get("/search/:query", async (c) => {
       },
     });
 
-    console.log("[search]", searchUser);
-
     return c.json({
-      user: {
-        searchUser,
-      },
+      user: searchUser,
     });
   } catch (error) {
     console.log(error);
-    return c.json({
-      error: error,
-    });
+    return c.json({ error: error }, 500);
   }
 });
 
 transactionRoute.get("/transactionHistory/:userId", async (c) => {
   const userId: string = c.req.param("userId");
-
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
-
   try {
+    // Only fetch necessary fields to minimize data transfer and optimize performance
     const transacHistory = await prisma.transactionDetails.findMany({
       where: {
         from_id: userId,
@@ -213,20 +199,19 @@ transactionRoute.get("/transactionHistory/:userId", async (c) => {
         trans_date: "desc", // Order by transaction date in descending order
       },
       take: 5, // Get the last 5 transactions
+      select: {
+        trans_id: true,
+        amount: true,
+        trans_date: true,
+        status: true,
+      },
     });
 
     return c.json({
-      user: {
-        transacHistory,
-      },
+      transactions: transacHistory,
     });
   } catch (error) {
     console.log(error);
-    return c.json(
-      {
-        error: error,
-      },
-      500
-    );
+    return c.json({ error: error }, 500);
   }
 });
