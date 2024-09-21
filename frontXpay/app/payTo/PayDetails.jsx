@@ -19,7 +19,7 @@ const PayDetails = () => {
   }, [router]);
 
   return (
-    <SafeAreaView className="justify-between flex-1 p-4 bg-gray-100">
+    <SafeAreaView className="justify-around flex-1 p-4 bg-gray-100">
       {/* Header Section */}
       <View className="items-center mb-4">
         <Ionicons name="checkmark-circle" size={60} color="green" />
@@ -37,7 +37,7 @@ const PayDetails = () => {
       </View>
 
       {/* Card Design with Border, Shadow, and Header */}
-      <View className="relative flex-col flex-grow mb-4 bg-white border rounded-lg shadow-sm border-slate-200">
+      <View className="flex-col mb-4 bg-white border rounded-lg shadow-sm border-slate-200">
         {/* Card Header */}
         <View className="px-2 pt-2 pb-1 mx-3 border-b border-slate-200">
           <Text className="text-lg font-semibold text-slate-800">
@@ -48,29 +48,29 @@ const PayDetails = () => {
         {/* Bank Info */}
         <View className="p-3">
           <View className="mb-2">
-            <Text className="text-gray-500 text-md">UPI Transaction ID</Text>
+            <Text className="text-lg text-gray-500">UPI Transaction ID</Text>
             <Text className="font-semibold text-gray-900 text-md">
               8787876576523
             </Text>
           </View>
 
           <View className="mb-2">
-            <Text className="text-gray-500 text-md">From</Text>
-            <Text className="font-semibold text-gray-900 text-md">
+            <Text className="text-lg text-gray-500">From</Text>
+            <Text className="text-lg font-semibold text-gray-900">
               Manish (manish@gmail.com)
             </Text>
           </View>
 
           <View className="mb-2">
-            <Text className="text-gray-500 text-md">To</Text>
-            <Text className="font-semibold text-gray-900 text-md">
+            <Text className="text-lg text-gray-500">To</Text>
+            <Text className="text-lg font-semibold text-gray-900">
               Anish (anish@gmail.com)
             </Text>
           </View>
 
           <View>
-            <Text className="text-gray-500 text-md">Bank</Text>
-            <Text className="font-semibold text-gray-900 text-md">
+            <Text className="text-lg text-gray-500">Bank</Text>
+            <Text className="text-lg font-semibold text-gray-900">
               Union Bank of India
             </Text>
           </View>

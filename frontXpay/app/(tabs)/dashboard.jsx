@@ -18,6 +18,7 @@ import SearchInput from "../../components/SearchInput.jsx";
 
 const Dashboard = () => {
   const router = useRouter();
+  const query = "";
   return (
     <SafeAreaView>
       {/* Wrap content inside ScrollView */}
@@ -99,7 +100,7 @@ const Dashboard = () => {
               borderRadius: 10,
               alignItems: "center",
             }}
-            onPress={() => router.push("/transferMoney")}
+            onPress={() => router.push(`/search/${query}`)}
           >
             <FontAwesome5 name="users" size={36} color="black" />
             <Text style={{ fontSize: 12, color: "black", textAlign: "center" }}>
