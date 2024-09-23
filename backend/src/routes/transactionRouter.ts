@@ -184,13 +184,25 @@ transactionRoute.get("/search/:query", async (c) => {
   }
 });
 
-transactionRoute.get("/transactionHistory/:userId", async (c) => {
-  const userId: string = c.req.param("userId");
+transactionRoute.get("/transactionHistory", async (c) => {
+  // const userId: string = c.req.param("userId");
+  const userId = c.get("userId");
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
   try {
     // Only fetch necessary fields to minimize data transfer and optimize performance
+    const fetchUserData = await prisma.user.findUnique({
+      where: {
+        user_id: userId,
+      },
+    });
+
+    const fetchAccounts = await prisma.account.findMany({
+      where: {
+        user_id: userId,
+      },
+    });
     const transacHistory = await prisma.transactionDetails.findMany({
       where: {
         from_id: userId,
@@ -208,10 +220,12 @@ transactionRoute.get("/transactionHistory/:userId", async (c) => {
     });
 
     return c.json({
+      userData: fetchUserData,
+      accountDetails: fetchAccounts,
       transactions: transacHistory,
     });
   } catch (error) {
     console.log(error);
-    return c.json({ error: error }, 500);
+    return c.json({ error: "Failed to fetch transaction history." }, 500);
   }
 });
