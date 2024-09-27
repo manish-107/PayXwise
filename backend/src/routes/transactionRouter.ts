@@ -158,8 +158,8 @@ transactionRoute.get("/search/:query", async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
+
   try {
-    // Optimize search by only selecting required fields
     const searchUser = await prisma.user.findMany({
       where: {
         fullName: {
@@ -172,11 +172,89 @@ transactionRoute.get("/search/:query", async (c) => {
         email: true,
         fullName: true,
         phoneNumber: true,
+        accounts: {
+          select: {
+            acc_no: true,
+            bankName: true,
+            balance: true,
+            created_date: true,
+            updated_date: true,
+          },
+        },
       },
     });
 
     return c.json({
       user: searchUser,
+    });
+  } catch (error) {
+    console.log(error);
+    return c.json({ error: error }, 500);
+  }
+});
+
+transactionRoute.get("/userSearch/:user_id", async (c) => {
+  const userId = c.req.param("user_id");
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    // Query for a user by user_id
+    const user = await prisma.user.findUnique({
+      where: {
+        user_id: userId,
+      },
+      select: {
+        user_id: true,
+        email: true,
+        fullName: true,
+        phoneNumber: true,
+        accounts: {
+          select: {
+            acc_no: true,
+            bankName: true,
+            balance: true,
+            created_date: true,
+            updated_date: true,
+          },
+        },
+        transactionDetailsTo: {
+          select: {
+            trans_id: true,
+            amount: true,
+            description: true,
+            trans_date: true,
+            trans_type: true,
+            status: true,
+          },
+        },
+        transactionDetailsFrom: {
+          select: {
+            trans_id: true,
+            amount: true,
+            description: true,
+            trans_date: true,
+            trans_type: true,
+            status: true,
+            to_user: {
+              select: {
+                user_id: true,
+                fullName: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return c.json({ error: "User not found" }, 404);
+    }
+
+    return c.json({
+      user: user,
     });
   } catch (error) {
     console.log(error);
