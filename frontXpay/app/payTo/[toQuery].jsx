@@ -9,31 +9,73 @@ import {
   KeyboardAvoidingView,
   Platform,
   FlatList,
+  Alert,
 } from "react-native";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import BASEURL from "../Var.js";
+
+// const BASEURL = "your_base_url"; // Replace with your actual base URL
 
 const SendToUser = () => {
   const { toQuery } = useLocalSearchParams();
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
-  const [expense, setExpense] = useState(""); // Track expense name input
+  const [expense, setExpense] = useState("");
   const [expenseList, setExpenseList] = useState([
     "Rent",
     "Groceries",
     "Utilities",
     "Subscriptions",
-  ]); // Predefined list of expenses
-  const [filteredExpenses, setFilteredExpenses] = useState(expenseList); // Filtered expenses
-  const [isTyping, setIsTyping] = useState(false); // Track if user is typing
+  ]);
+  const [filteredExpenses, setFilteredExpenses] = useState(expenseList);
+  const [isTyping, setIsTyping] = useState(false);
   const [showPayButton, setShowPayButton] = useState(false);
+  const [userDetails, setUserDetails] = useState({}); // State to hold user details
 
-  // Handle filtering expense names as user types
+  // Function to fetch user details by user ID
+  const fetchUserDetails = async (userId) => {
+    try {
+      const token = await AsyncStorage.getItem("jwtToken");
+      if (!token) {
+        Alert.alert("Error", "Unauthorized. Token not found.");
+        return;
+      }
+
+      const response = await axios.get(
+        `${BASEURL}/api/v1/transaction/userSearch/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Assuming response contains user details
+      const { user } = response.data;
+
+      // Update state with user details
+      setUserDetails(user);
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "Failed to fetch user details.");
+    }
+  };
+
+  useEffect(() => {
+    if (toQuery) {
+      fetchUserDetails(toQuery);
+    }
+  }, [toQuery]);
+
+  // Existing code...
+
   const handleExpenseChange = (text) => {
     setExpense(text);
-    setIsTyping(true); // Set typing to true when text changes
-
+    setIsTyping(true);
     if (text === "") {
       setFilteredExpenses(expenseList);
-      setIsTyping(false); // Set typing to false if text is empty
+      setIsTyping(false);
     } else {
       setFilteredExpenses(
         expenseList.filter((item) =>
@@ -43,11 +85,10 @@ const SendToUser = () => {
     }
   };
 
-  // Function to create a new expense
   const createExpense = () => {
     if (expense && !expenseList.includes(expense)) {
-      setExpenseList([...expenseList, expense]); // Add new expense to the list
-      setFilteredExpenses([...expenseList, expense]); // Update the filtered list
+      setExpenseList([...expenseList, expense]);
+      setFilteredExpenses([...expenseList, expense]);
     }
     setExpense("");
     setIsTyping(false);
@@ -74,10 +115,10 @@ const SendToUser = () => {
       >
         <View className="items-center ">
           <Text className="text-lg font-bold text-gray-900">
-            Paying : Manish
+            Paying: {userDetails.fullName || "User"}
           </Text>
           <Text className="text-lg font-extrabold text-green-500">
-            Bank Name : Bank of Bank
+            Bank Name: {userDetails.accounts?.[0]?.bankName || "Unknown"}
           </Text>
           <Text className="pt-3 text-lg font-bold">{`To: ${toQuery}`}</Text>
 
@@ -117,7 +158,6 @@ const SendToUser = () => {
                     </TouchableOpacity>
                   )}
                 />
-                {/* Show the 'Create Expense' button if no match is found */}
                 {filteredExpenses.length === 0 && expense !== "" && (
                   <TouchableOpacity
                     className="p-2 mt-3 bg-blue-500 rounded-md"

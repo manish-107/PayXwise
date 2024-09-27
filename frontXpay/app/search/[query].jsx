@@ -30,7 +30,7 @@ const PeopleCard = ({ user }) => {
         shadowRadius: 2,
         elevation: 2,
       }}
-      onPress={() => router.push(`/payTo/${user.phoneNumber}`)}
+      onPress={() => router.push(`/payTo/${user.user_id}`)}
     >
       <View
         style={{

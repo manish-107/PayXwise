@@ -1,12 +1,42 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, Image, Dimensions } from "react-native";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import indeximg from "../assets/indeximg2.png";
 
 const Index = () => {
   // Get the screen height
   const { height } = Dimensions.get("window");
+  const router = useRouter(); // For programmatic navigation
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const token = await AsyncStorage.getItem("jwtToken");
+        if (token) {
+          // Redirect to the dashboard if token exists
+          router.replace("/dashboard");
+        }
+        setLoading(false); // Set loading to false after checking token
+      } catch (error) {
+        console.log("Error checking token", error);
+        setLoading(false);
+      }
+    };
+
+    checkToken();
+  }, []);
+
+  if (loading) {
+    // Optionally render a loading screen while checking for token
+    return (
+      <SafeAreaView className="h-full bg-[#1c1d1d] flex justify-center items-center">
+        <Text className="text-white">Loading...</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="h-full bg-[#1c1d1d]">
@@ -16,8 +46,7 @@ const Index = () => {
             source={indeximg}
             style={{
               width: "100%",
-              height: height * 0.5, // Adjust the height to 30% of screen height
-
+              height: height * 0.5, // Adjust the height to 50% of screen height
               marginHorizontal: 10, // Add horizontal margin (left and right)
               padding: 0,
             }}
@@ -43,7 +72,7 @@ const Index = () => {
             className="text-xl font-bold bg-[#CBCF00] text-[#000000] rounded-3xl text-center px-8 py-3 underline"
             href="/signin"
           >
-            GetStarted
+            Get Started
           </Link>
         </View>
       </View>

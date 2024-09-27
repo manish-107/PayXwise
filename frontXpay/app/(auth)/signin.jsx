@@ -25,7 +25,12 @@ const SignIn = () => {
 
   const storeToken = async (token) => {
     try {
+      // Store the token in AsyncStorage
       await AsyncStorage.setItem("jwtToken", token);
+
+      // Retrieve the token to verify it was stored correctly
+      const storedToken = await AsyncStorage.getItem("jwtToken");
+      console.log(storedToken); // Log the stored token
     } catch (error) {
       console.log("Error storing token", error);
     }
@@ -33,21 +38,38 @@ const SignIn = () => {
 
   const signIn = async () => {
     setLoading(true); // Start loading
+
     try {
+      // Use trim() to remove extra spaces
+      const trimmedEmail = email.trim();
+      const trimmedPassword = password.trim();
+
       const response = await axios.post(`${BASEURL}/api/v1/users/signin`, {
-        email: email,
-        password: password,
+        email: trimmedEmail,
+        password: trimmedPassword,
       });
 
+      console.log(trimmedEmail, trimmedPassword);
+      console.log(response.data);
+
+      // Check if token exists in response data
       const { token } = response.data;
 
-      await storeToken(token);
-      route.push({ pathname: "/dashboard" });
-
-      // console.log("Sign in successful");
+      if (token) {
+        // Store the token if it exists
+        await storeToken(token);
+        route.push({ pathname: "/dashboard" });
+      } else {
+        // If token is missing, alert the user
+        Alert.alert("Sign-in Error", `${error.response?.data?.message}`);
+      }
     } catch (error) {
-      // console.error("Sign-in error", error);
-      Alert.alert("Sign-in Error", error);
+      console.error("Sign-in error", error);
+      // More specific error handling for network or validation errors
+      Alert.alert(
+        "Sign-in Error",
+        error.response?.data?.message || "An error occurred during sign-in."
+      );
     } finally {
       setLoading(false); // Stop loading
     }
