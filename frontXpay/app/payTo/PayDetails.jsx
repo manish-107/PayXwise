@@ -12,7 +12,7 @@ const PayDetails = () => {
   const [transDetails, setTransDetails] = useState(null); // Initialize as null
   const { transactionId } = useLocalSearchParams();
 
-  console.log(transDetails);
+  console.log(transactionId);
   const fetchTransactionDetails = async (transId) => {
     try {
       const token = await AsyncStorage.getItem("jwtToken");
@@ -21,7 +21,7 @@ const PayDetails = () => {
         return;
       }
       const response = await axios.get(
-        `${BASEURL}/transaction/transactionDetails/311af26428a747b`,
+        `${BASEURL}/api/v1/transaction/transactionDetails/${transactionId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

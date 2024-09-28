@@ -194,7 +194,7 @@ const SendToUser = () => {
           },
         }
       );
-      console.log(payRes);
+      // console.log(payRes);
       if (payRes) {
         // Assuming the response data contains the required info
         // const transactionId = data.addTransactionDetails.trans_id;
@@ -257,7 +257,7 @@ const SendToUser = () => {
 
             <TextInput
               className="w-4/5 my-3 text-5xl font-semibold text-center text-gray-900"
-              placeholder="$0.00"
+              placeholder="₹0.00"
               placeholderTextColor="#7b7b7b"
               keyboardType="numeric"
               value={amount}
