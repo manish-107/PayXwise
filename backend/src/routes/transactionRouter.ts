@@ -262,6 +262,131 @@ transactionRoute.get("/userSearch/:user_id", async (c) => {
   }
 });
 
+transactionRoute.get("/accountDetails", async (c) => {
+  const userId = c.get("userId"); // Retrieve the userId from the request context
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    // Fetch user details based on userId
+    const userDetails = await prisma.user.findUnique({
+      where: {
+        user_id: userId,
+      },
+      select: {
+        user_id: true,
+        fullName: true,
+        email: true,
+        phoneNumber: true,
+      },
+    });
+
+    // Fetch the account details for the current user
+    const accountDetails = await prisma.account.findMany({
+      where: {
+        user_id: userId,
+      },
+      select: {
+        acc_no: true,
+        bankName: true,
+        balance: true,
+        created_date: true,
+        updated_date: true,
+      },
+    });
+
+    // If no user or account details are found, return a 404 response
+    if (!userDetails || accountDetails.length === 0) {
+      return c.json({ message: "User or account details not found" }, 404);
+    }
+
+    // Return user details and account information
+    return c.json({
+      userDetails,
+      accountDetails,
+    });
+  } catch (error) {
+    console.error("Error fetching account details:", error);
+    return c.json({ error: "Failed to fetch account details" }, 500);
+  }
+});
+
+transactionRoute.get("/transactionDetails/:trans_id", async (c) => {
+  const transId = c.req.param("trans_id");
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    // Fetch the transaction details using the provided transaction ID
+    const transaction = await prisma.transactionDetails.findUnique({
+      where: {
+        trans_id: transId,
+      },
+      include: {
+        from_user: {
+          select: {
+            user_id: true,
+            fullName: true,
+            email: true,
+            accounts: {
+              select: {
+                acc_no: true,
+                bankName: true,
+                balance: true,
+              },
+            },
+          },
+        },
+        to_user: {
+          select: {
+            user_id: true,
+            fullName: true,
+            email: true,
+            accounts: {
+              select: {
+                acc_no: true,
+                bankName: true,
+                balance: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // If the transaction is not found, return a 404 response
+    if (!transaction) {
+      return c.json({ error: "Transaction not found" }, 404);
+    }
+
+    // Return the transaction details along with user and bank information
+    return c.json({
+      transactionId: transaction.trans_id,
+      amount: transaction.amount,
+      description: transaction.description,
+      fromUser: {
+        userId: transaction.from_user.user_id,
+        fullName: transaction.from_user.fullName,
+        email: transaction.from_user.email,
+        accounts: transaction.from_user.accounts,
+      },
+      toUser: {
+        userId: transaction.to_user.user_id,
+        fullName: transaction.to_user.fullName,
+        email: transaction.to_user.email,
+        accounts: transaction.to_user.accounts,
+      },
+      status: transaction.status,
+      transDate: transaction.trans_date,
+    });
+  } catch (error) {
+    console.error("Error fetching transaction details:", error);
+    return c.json({ error: "Failed to fetch transaction details." }, 500);
+  }
+});
+
 transactionRoute.get("/transactionHistory", async (c) => {
   // const userId: string = c.req.param("userId");
   const userId = c.get("userId");

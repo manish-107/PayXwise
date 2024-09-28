@@ -50,10 +50,6 @@ const SignupNext = () => {
 
   const signupData = async () => {
     try {
-      const Base = "";
-
-      console.log();
-
       const signupRes = await axios.post(`${BASEURL}/api/v1/users/signup`, {
         fullName: fullName,
         email: email,
@@ -64,8 +60,6 @@ const SignupNext = () => {
         securityAnswer: answer,
         bankName: bankname,
       });
-
-      console.log(signupRes);
 
       Alert.alert("Success", "Account created successfully! Please sign in.");
       route.push({ pathname: "/signin" });

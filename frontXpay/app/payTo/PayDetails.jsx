@@ -1,37 +1,90 @@
-import { View, Text, BackHandler } from "react-native";
-import React, { useEffect } from "react";
+import { View, Text, BackHandler, Alert } from "react-native";
+import { useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Don't forget to import AsyncStorage
+import BASEURL from "../Var.js";
 
 const PayDetails = () => {
-  // Handle hardware back button to navigate to the dashboard
+  const [transDetails, setTransDetails] = useState(null); // Initialize as null
+  const { transactionId } = useLocalSearchParams();
+
+  console.log(transDetails);
+  const fetchTransactionDetails = async (transId) => {
+    try {
+      const token = await AsyncStorage.getItem("jwtToken");
+      if (!token) {
+        Alert.alert("Error", "Unauthorized. Token not found.");
+        return;
+      }
+      const response = await axios.get(
+        `${BASEURL}/transaction/transactionDetails/311af26428a747b`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response);
+      setTransDetails(response.data); // Assign the response data to the state
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
+    console.log(transactionId);
+    fetchTransactionDetails(transactionId);
     const onBackPress = () => {
       router.push("(tabs)/dashboard"); // Navigate to Dashboard
-      return true; // Prevent default back action
+      return true;
     };
 
     BackHandler.addEventListener("hardwareBackPress", onBackPress);
 
     return () =>
       BackHandler.removeEventListener("hardwareBackPress", onBackPress);
-  }, [router]);
+  }, [router, transactionId]);
+
+  if (!transDetails) {
+    // Render a loading state while transaction details are being fetched
+    return (
+      <SafeAreaView className="items-center justify-center flex-1">
+        <Text>Loading...</Text>
+      </SafeAreaView>
+    );
+  }
+
+  // Destructure the data
+  const { amount, description, fromUser, toUser, status, transDate } =
+    transDetails;
 
   return (
     <SafeAreaView className="justify-around flex-1 p-4 bg-gray-100">
       {/* Header Section */}
       <View className="items-center mb-4">
-        <Ionicons name="checkmark-circle" size={60} color="green" />
+        <Ionicons
+          name={status === "success" ? "checkmark-circle" : "alert-circle"}
+          size={60}
+          color={status === "success" ? "green" : "red"}
+        />
         <Text className="mt-2 text-2xl font-bold text-green-600">
-          Payment Successful
+          {status === "success" ? "Payment Successful" : "Payment Failed"}
         </Text>
-        <Text className="mt-1 text-gray-500 text-md">7 Sept 2024, 6:04 PM</Text>
+        <Text className="mt-1 text-gray-500 text-md">
+          {new Date(transDate).toLocaleString()}
+        </Text>
         <View className="p-2 mb-4">
           <View className="items-center">
-            <Text className="text-4xl font-bold text-gray-900">₹ 260</Text>
-            <Text className="mt-2 text-gray-500 text-md">Paid to Manish</Text>
-            <Text className="text-gray-600 text-md">+91 8765654587</Text>
+            <Text className="text-4xl font-bold text-gray-900">₹ {amount}</Text>
+            <Text className="mt-2 text-gray-500 text-md">
+              Paid to {toUser.fullName}
+            </Text>
+            <Text className="text-gray-600 text-md">{toUser.email}</Text>
           </View>
         </View>
       </View>
@@ -41,7 +94,7 @@ const PayDetails = () => {
         {/* Card Header */}
         <View className="px-2 pt-2 pb-1 mx-3 border-b border-slate-200">
           <Text className="text-lg font-semibold text-slate-800">
-            Children Bank of Joseph
+            {fromUser.accounts[0].bankName}
           </Text>
         </View>
 
@@ -50,34 +103,34 @@ const PayDetails = () => {
           <View className="mb-2">
             <Text className="text-lg text-gray-500">UPI Transaction ID</Text>
             <Text className="font-semibold text-gray-900 text-md">
-              8787876576523
+              {transactionId}
             </Text>
           </View>
 
           <View className="mb-2">
             <Text className="text-lg text-gray-500">From</Text>
             <Text className="text-lg font-semibold text-gray-900">
-              Manish (manish@gmail.com)
+              {fromUser.fullName} ({fromUser.email})
             </Text>
           </View>
 
           <View className="mb-2">
             <Text className="text-lg text-gray-500">To</Text>
             <Text className="text-lg font-semibold text-gray-900">
-              Anish (anish@gmail.com)
+              {toUser.fullName} ({toUser.email})
             </Text>
           </View>
 
           <View>
             <Text className="text-lg text-gray-500">Bank</Text>
             <Text className="text-lg font-semibold text-gray-900">
-              Union Bank of India
+              {toUser.accounts[0].bankName}
             </Text>
           </View>
         </View>
-
-        {/* Card Footer */}
       </View>
+
+      {/* Footer */}
       <View className="px-2 pt-2 pb-2 mx-3 border-t border-slate-200">
         <Text className="text-sm text-center text-gray-500">
           Powered by PayXwise
