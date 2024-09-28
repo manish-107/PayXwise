@@ -63,6 +63,8 @@ const Dashboard = () => {
       // Assuming response contains userData, accountDetails, and transactions
       const { userData, accountDetails, transactions } = response.data;
 
+      console.log(accountDetails);
+
       // Update state with user and transaction info
       setUsername(userData?.fullName || "User");
       setAmount(accountDetails?.[0]?.balance || 0);
