@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
 
 const Expanse = () => {
   const [expanseDetails, setExpanseDetails] = useState([]);
+  const [loading, setLoading] = useState(true); // State for loading indicator
 
   const fetchUserExpanse = async () => {
     try {
@@ -22,16 +30,21 @@ const Expanse = () => {
         );
 
         setExpanseDetails(expanseCategoryuser.data.categories);
-        console.log(expanseCategoryuser.data.categories);
+        setLoading(false); // Set loading to false when data is fetched
       }
     } catch (error) {
       console.log(error);
+      setLoading(false); // Stop loading in case of an error
     }
   };
 
-  useEffect(() => {
-    fetchUserExpanse();
-  }, []);
+  // Use useFocusEffect to fetch data when the component is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      setLoading(true); // Reset loading state
+      fetchUserExpanse();
+    }, [])
+  );
 
   // Render each item in the list
   const renderItem = ({ item }) => (
@@ -46,12 +59,19 @@ const Expanse = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Expense Categories</Text>
-      <FlatList
-        data={expanseDetails}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.listContainer}
-      />
+
+      {loading ? (
+        // Show loading indicator when loading is true
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        // Show the FlatList when data is loaded
+        <FlatList
+          data={expanseDetails}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.listContainer}
+        />
+      )}
     </SafeAreaView>
   );
 };

@@ -11,7 +11,6 @@ import { Link, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import CustomeButton from "../../components/customeButton.jsx";
-import LoadingScreen from "../../components/LoadingScreen.jsx";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // For storing JWT token
 import BASEURL from "../Var.js"; // Your base URL
@@ -25,12 +24,7 @@ const SignIn = () => {
 
   const storeToken = async (token) => {
     try {
-      // Store the token in AsyncStorage
       await AsyncStorage.setItem("jwtToken", token);
-
-      // Retrieve the token to verify it was stored correctly
-      const storedToken = await AsyncStorage.getItem("jwtToken");
-      console.log(storedToken); // Log the stored token
     } catch (error) {
       console.log("Error storing token", error);
     }
@@ -38,9 +32,7 @@ const SignIn = () => {
 
   const signIn = async () => {
     setLoading(true); // Start loading
-
     try {
-      // Use trim() to remove extra spaces
       const trimmedEmail = email.trim();
       const trimmedPassword = password.trim();
 
@@ -49,23 +41,15 @@ const SignIn = () => {
         password: trimmedPassword,
       });
 
-      console.log(trimmedEmail, trimmedPassword);
-      console.log(response.data);
-
-      // Check if token exists in response data
       const { token } = response.data;
 
       if (token) {
-        // Store the token if it exists
         await storeToken(token);
         route.push({ pathname: "/dashboard" });
       } else {
-        // If token is missing, alert the user
-        Alert.alert("Sign-in Error", `${error.response?.data?.message}`);
+        Alert.alert("Sign-in Error", "Token not found.");
       }
     } catch (error) {
-      console.error("Sign-in error", error);
-      // More specific error handling for network or validation errors
       Alert.alert(
         "Sign-in Error",
         error.response?.data?.message || "An error occurred during sign-in."
@@ -75,6 +59,8 @@ const SignIn = () => {
     }
   };
 
+  const isSignInDisabled = !email.trim() || !password.trim();
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
       <View className="items-center justify-center flex-1 p-4">
@@ -82,17 +68,8 @@ const SignIn = () => {
           <Text className="text-4xl font-bold text-[#CBCF00] text-center">
             Sign In
           </Text>
-          {loading && (
-            <>
-              <View style={{ alignItems: "center", marginTop: 10 }}>
-                <ActivityIndicator size="large" color="#CBCF00" />
-
-                {/* Optional loading text */}
-              </View>
-            </>
-          )}
+          {loading && <ActivityIndicator size="large" color="#CBCF00" />}
           <View className="mt-6">
-            {/* Email Input */}
             <View className="p-1 mb-3">
               <Text className="p-1 text-xl font-semibold text-white">
                 Email
@@ -109,7 +86,6 @@ const SignIn = () => {
               />
             </View>
 
-            {/* Password Input with Toggle Visibility */}
             <View className="relative mb-3">
               <Text className="p-1 text-xl font-semibold text-white">
                 Password
@@ -134,7 +110,7 @@ const SignIn = () => {
               </TouchableOpacity>
             </View>
           </View>
-          {/* Link and Button */}
+
           <Text className="flex p-5 mb-4 text-xl font-light text-center text-white">
             Don't have an account?{" "}
             <Link className="font-light text-blue-600" href="/signup">
@@ -142,17 +118,11 @@ const SignIn = () => {
             </Link>
           </Text>
 
-          {loading ? (
-            <>
-              <CustomeButton
-                // onPress={""}
-                text="Lodding..."
-                disabled={loading}
-              />
-            </>
-          ) : (
-            <CustomeButton onPress={signIn} text="Sign in" disabled={loading} />
-          )}
+          <CustomeButton
+            onPress={signIn}
+            text="Sign in"
+            disabled={loading || isSignInDisabled}
+          />
         </View>
       </View>
     </SafeAreaView>

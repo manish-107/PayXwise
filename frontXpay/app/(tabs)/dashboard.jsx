@@ -8,16 +8,16 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Entypo from "@expo/vector-icons/Entypo";
-import { useRouter } from "expo-router";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { useRouter, useFocusEffect } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import DashboardPeople from "../../components/DashBoardPeople.jsx";
 import LastFiveTransaction from "../../components/LastFiveTransaction.jsx";
 import SearchInput from "../../components/SearchInput.jsx";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Foundation from "@expo/vector-icons/Foundation";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-
 import axios from "axios";
 import BASEURL from "../Var.js";
 
@@ -30,10 +30,7 @@ const Dashboard = () => {
 
   const onLogout = async () => {
     try {
-      // Clear the token from AsyncStorage
       await AsyncStorage.removeItem("jwtToken");
-
-      // Optionally navigate to the login screen
       router.push("(auth)/signin");
     } catch (error) {
       console.error("Failed to log out:", error);
@@ -42,12 +39,11 @@ const Dashboard = () => {
   };
 
   const fetchTransactionHistory = async () => {
+    setLoading(true); // Start loading again before fetching
     try {
       const token = await AsyncStorage.getItem("jwtToken");
-      // console.log(token);
       if (!token) {
         Alert.alert("Error", "Unauthorized. Token not found.");
-        // router.push("(auth)/login");
         return;
       }
 
@@ -60,12 +56,8 @@ const Dashboard = () => {
         }
       );
 
-      // Assuming response contains userData, accountDetails, and transactions
       const { userData, accountDetails, transactions } = response.data;
 
-      console.log(accountDetails);
-
-      // Update state with user and transaction info
       setUsername(userData?.fullName || "User");
       setAmount(accountDetails?.[0]?.balance || 0);
       setTransactions(transactions);
@@ -77,6 +69,7 @@ const Dashboard = () => {
     }
   };
 
+  // Fetch transaction history on component mount
   useEffect(() => {
     fetchTransactionHistory();
   }, []);
@@ -128,7 +121,6 @@ const Dashboard = () => {
                 <Text className="text-xl font-bold text-white">$ {amount}</Text>
               </View>
             </View>
-            {/* Logout Button */}
             <TouchableOpacity onPress={onLogout}>
               <MaterialCommunityIcons name="logout" size={24} color="red" />
             </TouchableOpacity>
@@ -152,21 +144,38 @@ const Dashboard = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={buttonStyle}
-            onPress={() => router.push(`/search/${query}`)}
+            onPress={() => router.push(`/(tabs)/expanse`)}
           >
-            <FontAwesome5 name="users" size={36} color="black" />
-            <Text style={buttonTextStyle}>Pay</Text>
+            <Foundation name="graph-bar" size={36} color="black" />
+            <Text style={buttonTextStyle}>Expanse</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={buttonStyle}
             onPress={() => router.push("/Scan")}
           >
-            <MaterialIcons name="qr-code-scanner" size={36} color="black" />
-            <Text style={buttonTextStyle}>Scan</Text>
+            <AntDesign name="qrcode" size={36} color="black" />
+            <Text style={buttonTextStyle}>QR code</Text>
           </TouchableOpacity>
         </View>
 
+        {/* Refresh Button */}
+
         <DashboardPeople />
+        <TouchableOpacity
+          style={{
+            backgroundColor: "#D5EB4D",
+            padding: 10,
+            borderRadius: 8,
+            marginBottom: 0,
+            alignSelf: "center",
+            marginTop: 10,
+          }}
+          onPress={fetchTransactionHistory} // Fetch transactions on button press
+        >
+          <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+            Refresh Transactions
+          </Text>
+        </TouchableOpacity>
         <LastFiveTransaction transactions={transactions} />
       </ScrollView>
     </SafeAreaView>
