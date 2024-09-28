@@ -1,32 +1,20 @@
 import {
   View,
   Text,
-  Pressable,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SearchInput from "../../components/SearchInput";
 import Feather from "@expo/vector-icons/Feather";
-
-// Sample data for users
-const users = [
-  { id: 1, name: "Manish", phone: "+91 8989898989" },
-  { id: 2, name: "Ravi", phone: "+91 7878787878" },
-  { id: 3, name: "Pooja", phone: "+91 6767676767" },
-  { id: 4, name: "Anjali", phone: "+91 5656565656" },
-  { id: 5, name: "Suresh", phone: "+91 4545454545" },
-  { id: 6, name: "Suresh", phone: "+91 4545454545" },
-  { id: 7, name: "Suresh", phone: "+91 4545454545" },
-  { id: 8, name: "Suresh", phone: "+91 4545454545" },
-  { id: 9, name: "Suresh", phone: "+91 4545454545" },
-  { id: 10, name: "Suresh", phone: "+91 4545454545" },
-];
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
+import BASEURL from "../Var.js"; // Assuming this contains your backend URL
 
 const PeopleCard = ({ user }) => {
-  let phone = user.phone;
   return (
     <TouchableOpacity
       style={{
@@ -42,7 +30,7 @@ const PeopleCard = ({ user }) => {
         shadowRadius: 2,
         elevation: 2,
       }}
-      onPress={() => router.push(`/payTo/${user.phone}`)}
+      onPress={() => router.push(`/payTo/${user.user_id}`)}
     >
       <View
         style={{
@@ -59,9 +47,9 @@ const PeopleCard = ({ user }) => {
 
       <View style={{ flexDirection: "column", justifyContent: "center" }}>
         <Text style={{ fontWeight: "bold", fontSize: 16, color: "#333" }}>
-          {user.name}
+          {user.fullName}
         </Text>
-        <Text style={{ color: "#555" }}>{user.phone}</Text>
+        <Text style={{ color: "#555" }}>{user.phoneNumber}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -69,22 +57,75 @@ const PeopleCard = ({ user }) => {
 
 const SearchSender = () => {
   const { query } = useLocalSearchParams();
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch users based on the search query
+  const fetchUsers = async () => {
+    setLoading(true); // Show loading spinner
+    try {
+      const token = await AsyncStorage.getItem("jwtToken"); // Get the token from AsyncStorage
+
+      if (!token) {
+        throw new Error("Unauthorized. Token not found.");
+      }
+
+      const response = await axios.get(
+        `${BASEURL}/api/v1/transaction/search/${query}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include token in the Authorization header
+          },
+        }
+      );
+
+      setUsers(response.data.user); // Assuming the response contains an array of users
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setUsers([]); // Clear users in case of error
+    } finally {
+      setLoading(false); // Hide loading spinner
+    }
+  };
+
+  // Call fetchUsers on component mount or query change
+  useEffect(() => {
+    if (query) {
+      fetchUsers();
+    }
+  }, [query]);
 
   return (
     <SafeAreaView style={{ backgroundColor: "#e0e3eb", flex: 1 }}>
       <SearchInput initialQuery={query} />
-      <Text className="text-xl font-semibold ml-7">Make transaction</Text>
-      {/* FlatList to render the users */}
-      <FlatList
-        data={users}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <PeopleCard user={item} />}
-        contentContainerStyle={{ padding: 20 }}
-      />
 
-      <Text style={{ color: "#555", textAlign: "center", marginTop: 10 }}>
-        {query}
-      </Text>
+      <Text className="text-xl font-semibold ml-7">Make transaction</Text>
+
+      {/* Show loading spinner when loading */}
+      {loading ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text style={{ marginTop: 10 }}>Loading...</Text>
+        </View>
+      ) : (
+        <>
+          {/* Show message if no users are found */}
+          {users.length === 0 ? (
+            <Text style={{ textAlign: "center", marginTop: 20 }}>
+              No users found for "{query}"
+            </Text>
+          ) : (
+            <FlatList
+              data={users}
+              keyExtractor={(item) => item.user_id.toString()}
+              renderItem={({ item }) => <PeopleCard user={item} />}
+              contentContainerStyle={{ padding: 20 }}
+            />
+          )}
+        </>
+      )}
     </SafeAreaView>
   );
 };

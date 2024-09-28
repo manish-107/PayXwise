@@ -1,30 +1,96 @@
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import React, { useState } from "react";
 import { Link, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import CustomeButton from "../../components/customeButton.jsx";
+import LoadingScreen from "../../components/LoadingScreen.jsx";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // For storing JWT token
+import BASEURL from "../Var.js"; // Your base URL
 
-const signin = () => {
+const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordVisible, setPasswordVisible] = React.useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState(false); // Loading state
   const route = useRouter();
-  const signIn = () => {
-    route.push({
-      pathname: "/dashboard",
-    });
-    console.log("sign in");
+
+  const storeToken = async (token) => {
+    try {
+      // Store the token in AsyncStorage
+      await AsyncStorage.setItem("jwtToken", token);
+
+      // Retrieve the token to verify it was stored correctly
+      const storedToken = await AsyncStorage.getItem("jwtToken");
+      console.log(storedToken); // Log the stored token
+    } catch (error) {
+      console.log("Error storing token", error);
+    }
+  };
+
+  const signIn = async () => {
+    setLoading(true); // Start loading
+
+    try {
+      // Use trim() to remove extra spaces
+      const trimmedEmail = email.trim();
+      const trimmedPassword = password.trim();
+
+      const response = await axios.post(`${BASEURL}/api/v1/users/signin`, {
+        email: trimmedEmail,
+        password: trimmedPassword,
+      });
+
+      console.log(trimmedEmail, trimmedPassword);
+      console.log(response.data);
+
+      // Check if token exists in response data
+      const { token } = response.data;
+
+      if (token) {
+        // Store the token if it exists
+        await storeToken(token);
+        route.push({ pathname: "/dashboard" });
+      } else {
+        // If token is missing, alert the user
+        Alert.alert("Sign-in Error", `${error.response?.data?.message}`);
+      }
+    } catch (error) {
+      console.error("Sign-in error", error);
+      // More specific error handling for network or validation errors
+      Alert.alert(
+        "Sign-in Error",
+        error.response?.data?.message || "An error occurred during sign-in."
+      );
+    } finally {
+      setLoading(false); // Stop loading
+    }
   };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
-      {/* Center the content */}
       <View className="items-center justify-center flex-1 p-4">
         <View className="flex flex-col justify-around w-full p-6 bg-black bg-opacity-50 rounded-3xl">
           <Text className="text-4xl font-bold text-[#CBCF00] text-center">
             Sign In
           </Text>
+          {loading && (
+            <>
+              <View style={{ alignItems: "center", marginTop: 10 }}>
+                <ActivityIndicator size="large" color="#CBCF00" />
+
+                {/* Optional loading text */}
+              </View>
+            </>
+          )}
           <View className="mt-6">
             {/* Email Input */}
             <View className="p-1 mb-3">
@@ -68,7 +134,6 @@ const signin = () => {
               </TouchableOpacity>
             </View>
           </View>
-
           {/* Link and Button */}
           <Text className="flex p-5 mb-4 text-xl font-light text-center text-white">
             Don't have an account?{" "}
@@ -77,11 +142,21 @@ const signin = () => {
             </Link>
           </Text>
 
-          <CustomeButton onPress={signIn} text="Sign in" />
+          {loading ? (
+            <>
+              <CustomeButton
+                // onPress={""}
+                text="Lodding..."
+                disabled={loading}
+              />
+            </>
+          ) : (
+            <CustomeButton onPress={signIn} text="Sign in" disabled={loading} />
+          )}
         </View>
       </View>
     </SafeAreaView>
   );
 };
 
-export default signin;
+export default SignIn;

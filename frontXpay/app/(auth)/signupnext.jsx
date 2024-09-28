@@ -1,8 +1,19 @@
 import { useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
+import { Link, useRouter } from "expo-router";
 import { Dropdown } from "react-native-element-dropdown";
-import { SafeAreaView, Text, View, StyleSheet, TextInput } from "react-native";
+import {
+  SafeAreaView,
+  Text,
+  View,
+  StyleSheet,
+  TextInput,
+  Alert,
+} from "react-native";
 import CustomeButton from "../../components/customeButton";
+import axios from "axios";
+import BASEURL from "../Var.js";
+import LoadingScreen from "../../components/LoadingScreen"; // Import the loading screen
 
 const genderData = [
   { label: "Male", value: "male" },
@@ -10,9 +21,9 @@ const genderData = [
 ];
 
 const questionData = [
-  { label: "What is your pet's name?", value: "pet" },
-  { label: "What is your favorite book?", value: "book" },
-  { label: "What was the name of your first school?", value: "school" },
+  { label: "What is your pet's name?", value: "1" },
+  { label: "What is your favorite book?", value: "2" },
+  { label: "What was the name of your first school?", value: "3" },
 ];
 
 const SignupNext = () => {
@@ -21,17 +32,54 @@ const SignupNext = () => {
   const [isFocusGender, setIsFocusGender] = useState(false);
   const [isFocusQuestion, setIsFocusQuestion] = useState(false);
   const [answer, setAnswer] = useState("");
+  const [bankname, setBankname] = useState("");
+  const [loading, setLoading] = useState(false); // Loading state
 
-  // Accessing passed parameters using useLocalSearchParams
+  const route = useRouter();
   const { fullName, email, phoneNumber, password } = useLocalSearchParams();
 
   const createAccount = () => {
-    if (gender == "" || question == "" || answer == "") {
+    if (gender === "" || question === "" || answer === "" || bankname === "") {
+      Alert.alert("Error", "Please fill all the fields.");
       return;
     }
-    console.log(fullName, email, phoneNumber, password);
-    console.log(gender, question, answer);
+
+    setLoading(true); // Start loading
+    signupData();
   };
+
+  const signupData = async () => {
+    try {
+      const Base = "";
+
+      console.log();
+
+      const signupRes = await axios.post(`${BASEURL}/api/v1/users/signup`, {
+        fullName: fullName,
+        email: email,
+        phoneNumber: phoneNumber,
+        password: password,
+        gender: gender,
+        securityQuestion: question,
+        securityAnswer: answer,
+        bankName: bankname,
+      });
+
+      console.log(signupRes);
+
+      Alert.alert("Success", "Account created successfully! Please sign in.");
+      route.push({ pathname: "/signin" });
+    } catch (error) {
+      console.error("Error response: ", error.response);
+      Alert.alert("Error", "Account creation failed. Please try again.");
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
+
+  if (loading) {
+    return <LoadingScreen />; // Show loading screen while creating the account
+  }
 
   return (
     <SafeAreaView className="h-full bg-[#000000]">
@@ -65,7 +113,19 @@ const SignupNext = () => {
               )}
             />
           </View>
-
+          <View className="p-1 mb-3">
+            <Text className="p-1 text-xl font-semibold text-white">
+              Bank name
+            </Text>
+            <TextInput
+              className="w-full h-10 pl-2 text-lg text-white bg-gray-900 border-2 rounded-lg"
+              style={{ borderColor: "#6B7280" }}
+              placeholder={`Enter your bank name`}
+              placeholderTextColor="#888"
+              onChangeText={setBankname}
+              value={bankname}
+            />
+          </View>
           {/* Security Questions */}
           <View className="p-1 mt-3 mb-3">
             <Text className="p-1 text-xl font-semibold text-white">
@@ -105,10 +165,7 @@ const SignupNext = () => {
               value={answer}
             />
           </View>
-          <CustomeButton
-            onPress={() => createAccount()}
-            text="Create account"
-          />
+          <CustomeButton onPress={createAccount} text="Create account" />
         </View>
       </View>
     </SafeAreaView>
