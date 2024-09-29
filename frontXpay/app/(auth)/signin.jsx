@@ -32,7 +32,9 @@ const SignIn = () => {
 
   const signIn = async () => {
     setLoading(true); // Start loading
+
     try {
+      // Use trim() to remove extra spaces
       const trimmedEmail = email.trim();
       const trimmedPassword = password.trim();
 
@@ -41,15 +43,23 @@ const SignIn = () => {
         password: trimmedPassword,
       });
 
+      console.log(trimmedEmail, trimmedPassword);
+      console.log(response.data);
+
+      // Check if token exists in response data
       const { token } = response.data;
 
       if (token) {
+        // Store the token if it exists
         await storeToken(token);
         route.push({ pathname: "/dashboard" });
       } else {
-        Alert.alert("Sign-in Error", "Token not found.");
+        // If token is missing, alert the user
+        Alert.alert("Sign-in Error", `${error.response?.data?.message}`);
       }
     } catch (error) {
+      console.error("Sign-in error", error);
+      // More specific error handling for network or validation errors
       Alert.alert(
         "Sign-in Error",
         error.response?.data?.message || "An error occurred during sign-in."
@@ -118,11 +128,17 @@ const SignIn = () => {
             </Link>
           </Text>
 
-          <CustomeButton
-            onPress={signIn}
-            text="Sign in"
-            disabled={loading || isSignInDisabled}
-          />
+          {loading ? (
+            <>
+              <CustomeButton
+                // onPress={""}
+                text="Loading..."
+                disabled={loading}
+              />
+            </>
+          ) : (
+            <CustomeButton onPress={signIn} text="Sign in" disabled={false} />
+          )}
         </View>
       </View>
     </SafeAreaView>

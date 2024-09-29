@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useRouter } from "expo-router"; // Import useRouter for navigation
 import axios from "axios";
-import BASEURL from "../app/Var.js"; // Ensure BASEURL is correctly set up
+// import BASEURL from "../app/Var.js"; // Ensure BASEURL is correctly set up
 
 const DashboardPeople = () => {
   const [userList, setUserList] = useState([]);

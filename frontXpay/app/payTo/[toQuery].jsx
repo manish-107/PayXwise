@@ -102,6 +102,7 @@ const SendToUser = () => {
 
   useEffect(() => {
     if (toQuery) {
+      console.log(toQuery)
       fetchUserDetails(toQuery);
     }
   }, [toQuery]);

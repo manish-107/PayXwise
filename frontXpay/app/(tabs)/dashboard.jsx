@@ -24,6 +24,7 @@ import BASEURL from "../Var.js";
 const Dashboard = () => {
   const [transactions, setTransactions] = useState([]);
   const [username, setUsername] = useState("");
+  const [userId, setUserId] = useState("");
   const [amount, setAmount] = useState(0);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -56,9 +57,9 @@ const Dashboard = () => {
         }
       );
 
-      const { userData, accountDetails, transactions } = response.data;
-
+      const { userData, accountDetails, transactions = [] } = response.data;
       setUsername(userData?.fullName || "User");
+      setUserId(userData?.user_id);
       setAmount(accountDetails?.[0]?.balance || 0);
       setTransactions(transactions);
       setLoading(false);
@@ -151,7 +152,7 @@ const Dashboard = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={buttonStyle}
-            onPress={() => router.push("/Scan")}
+            onPress={() => router.push({ pathname: "/QRCode", params: { qrValue: userId } })}
           >
             <AntDesign name="qrcode" size={36} color="black" />
             <Text style={buttonTextStyle}>QR code</Text>
