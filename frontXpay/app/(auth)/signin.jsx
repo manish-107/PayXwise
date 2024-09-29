@@ -31,42 +31,42 @@ const SignIn = () => {
   };
 
   const signIn = async () => {
-    // setLoading(true); // Start loading
-    route.push({ pathname: "/dashboard" });
+    setLoading(true); // Start loading
 
-    // try {
-    //   // Use trim() to remove extra spaces
-    //   const trimmedEmail = email.trim();
-    //   const trimmedPassword = password.trim();
+    try {
+      // Use trim() to remove extra spaces
+      const trimmedEmail = email.trim();
+      const trimmedPassword = password.trim();
 
-    //   const response = await axios.post(`${BASEURL}/api/v1/users/signin`, {
-    //     email: trimmedEmail,
-    //     password: trimmedPassword,
-    //   });
+      const response = await axios.post(`${BASEURL}/api/v1/users/signin`, {
+        email: trimmedEmail,
+        password: trimmedPassword,
+      });
 
-    //   console.log(trimmedEmail, trimmedPassword);
-    //   console.log(response.data);
+      console.log(trimmedEmail, trimmedPassword);
+      console.log(response.data);
 
-    //   // Check if token exists in response data
-    //   const { token } = response.data;
+      // Check if token exists in response data
+      const { token } = response.data;
 
-    //   if (token) {
-    //     // Store the token if it exists
-    //     await storeToken(token);
-    //   } else {
-    //     // If token is missing, alert the user
-    //     Alert.alert("Sign-in Error", `${error.response?.data?.message}`);
-    //   }
-    // } catch (error) {
-    //   console.error("Sign-in error", error);
-    //   // More specific error handling for network or validation errors
-    //   Alert.alert(
-    //     "Sign-in Error",
-    //     error.response?.data?.message || "An error occurred during sign-in."
-    //   );
-    // } finally {
-    //   setLoading(false); // Stop loading
-    // }
+      if (token) {
+        // Store the token if it exists
+        await storeToken(token);
+        route.push({ pathname: "/dashboard" });
+      } else {
+        // If token is missing, alert the user
+        Alert.alert("Sign-in Error", `${error.response?.data?.message}`);
+      }
+    } catch (error) {
+      console.error("Sign-in error", error);
+      // More specific error handling for network or validation errors
+      Alert.alert(
+        "Sign-in Error",
+        error.response?.data?.message || "An error occurred during sign-in."
+      );
+    } finally {
+      setLoading(false); // Stop loading
+    }
   };
 
   const isSignInDisabled = !email.trim() || !password.trim();
@@ -132,7 +132,7 @@ const SignIn = () => {
             <>
               <CustomeButton
                 // onPress={""}
-                text="Lodding..."
+                text="Loading..."
                 disabled={loading}
               />
             </>
