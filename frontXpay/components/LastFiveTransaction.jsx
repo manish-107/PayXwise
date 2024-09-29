@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 
 const LastFiveTransaction = ({ transactions }) => {
   return (
-    <View className="bg-[#D5EB4D] h-fit m-5 rounded-lg">
+    <View className="bg-[#D5EB4D] h-fit m-2 rounded-lg">
       <Text className="pt-5 pl-10 text-xl font-bold text-black">
         Transactions
       </Text>

@@ -10,7 +10,7 @@ import {
   Platform,
   FlatList,
   Alert,
-  ActivityIndicator, // Add ActivityIndicator for loading spinner
+  ActivityIndicator,
 } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -54,6 +54,7 @@ const SendToUser = () => {
   // Fetch user details and account details
   const fetchUserDetails = async (userId) => {
     try {
+      setLoading(true); // Start loading when fetching user details
       const token = await AsyncStorage.getItem("jwtToken");
       if (!token) {
         Alert.alert("Error", "Unauthorized. Token not found.");
@@ -94,6 +95,8 @@ const SendToUser = () => {
     } catch (error) {
       console.error("Failed to fetch user details:", error);
       Alert.alert("Error", "Failed to fetch user details.");
+    } finally {
+      setLoading(false); // Stop loading after fetch
     }
   };
 
@@ -175,8 +178,6 @@ const SendToUser = () => {
       setLoading(true); // Start loading
 
       const fromAccNo = userAccount.acc_no;
-      // Access acc_no from accounts
-      // console.log(accountNumber);
       console.log(toAccID, amount, selectedExpenseId, description, fromAccNo);
       const payRes = await axios.post(
         `${BASEURL}/api/v1/transaction/sentMoney`,
@@ -194,22 +195,16 @@ const SendToUser = () => {
           },
         }
       );
-      console.log(payRes);
-      if (payRes) {
-        // Assuming the response data contains the required info
-        // const transactionId = data.addTransactionDetails.trans_id;
-        // console.log(payRes.addTransactionDetails);
-        const { data } = payRes; // Assuming payRes is the response object
 
-        // Extract the transaction ID
+      if (payRes) {
+        const { data } = payRes; // Assuming payRes is the response object
         const transactionId = data.data.addTransactionDetails.trans_id;
-        // Redirect to PayDetails with query parameters
         setTimeout(() => {
           setLoading(false); // Stop loading after the delay
           router.push({
             pathname: "payTo/PayDetails",
             params: {
-              transactionId: transactionId, // Example: Replace with the actual property from payRes
+              transactionId: transactionId,
             },
           });
         }, 2000); // Delay of 2 seconds before redirect
@@ -257,7 +252,7 @@ const SendToUser = () => {
 
             <TextInput
               className="w-4/5 my-3 text-5xl font-semibold text-center text-gray-900"
-              placeholder="$0.00"
+              placeholder="₹0.00"
               placeholderTextColor="#7b7b7b"
               keyboardType="numeric"
               value={amount}
@@ -286,16 +281,16 @@ const SendToUser = () => {
                           setIsTyping(false);
                         }}
                       >
-                        <Text className="text-base">{item.expcat_name}</Text>
+                        <Text className="text-lg">{item.expcat_name}</Text>
                       </TouchableOpacity>
                     )}
                   />
                   <TouchableOpacity
-                    className="p-2 mt-2 bg-green-200 rounded-md"
+                    className="p-2 my-1 bg-blue-500 rounded-md"
                     onPress={createExpense}
                   >
-                    <Text className="text-base font-semibold text-green-900">
-                      Create New Expense
+                    <Text className="text-lg text-white">
+                      Create new expense
                     </Text>
                   </TouchableOpacity>
                 </>
@@ -303,22 +298,21 @@ const SendToUser = () => {
             </View>
 
             <TextInput
-              className="w-4/5 p-2 my-3 text-center border border-gray-300 rounded-md"
+              className="w-4/5 p-2 my-3 border border-gray-300 rounded-md"
               placeholder="Description"
               placeholderTextColor="#999"
               value={description}
               onChangeText={(text) => setDescription(text)}
             />
 
-            <TouchableOpacity
-              className={`w-4/5 p-4 my-3 rounded-md ${
-                showPayButton ? "bg-green-500" : "bg-gray-400"
-              }`}
-              disabled={!showPayButton}
-              onPress={payAmount}
-            >
-              <Text className="text-lg font-bold text-white">Pay Now</Text>
-            </TouchableOpacity>
+            {showPayButton && (
+              <TouchableOpacity
+                className="w-4/5 p-3 my-3 bg-blue-500 rounded-md"
+                onPress={payAmount}
+              >
+                <Text className="text-lg text-center text-white">Pay Now</Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
       </KeyboardAvoidingView>

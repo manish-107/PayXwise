@@ -1,10 +1,60 @@
-import { Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Text, View, ActivityIndicator } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios"; // Make sure axios is imported
 
 const Account = () => {
+  const [accountDetails, setAccountDetails] = useState(null);
+  const [loading, setLoading] = useState(true); // State for loading indicator
+
+  const fetchAccDetails = async () => {
+    try {
+      const token = await AsyncStorage.getItem("jwtToken");
+      if (token) {
+        const response = await axios.get(
+          `${BASEURL}/api/v1/transaction/accountDetails`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setAccountDetails(response.data); // Set fetched data to state
+        setLoading(false); // Stop loading once data is fetched
+      }
+    } catch (error) {
+      console.log(error);
+      setLoading(false); // Stop loading in case of an error
+    }
+  };
+
+  useEffect(() => {
+    fetchAccDetails();
+  }, []);
+
+  if (loading) {
+    return (
+      <SafeAreaView
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
+        <ActivityIndicator size="large" color="#F5D547" />
+      </SafeAreaView>
+    );
+  }
+
+  // Destructure the fetched data
+  const { userDetails, accountDetails: accDetails } = accountDetails || {};
+  const userFullName = userDetails?.fullName || "User";
+  const userEmail = userDetails?.email || "user@example.com";
+  const userPhone = userDetails?.phoneNumber || "N/A";
+  const accountNumber = accDetails?.[0]?.acc_no || "XXXX XXXX XXXX";
+  const bankName = accDetails?.[0]?.bankName || "Unknown Bank";
+  const availableBalance = accDetails?.[0]?.balance || "0.00";
+
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: "#121212", paddingHorizontal: 16 }}
@@ -29,11 +79,9 @@ const Account = () => {
         <Entypo name="user" size={38} color="white" />
         <View style={{ marginLeft: 12 }}>
           <Text style={{ color: "#E0E0E0", fontSize: 18, fontWeight: "600" }}>
-            Manish
+            {userFullName}
           </Text>
-          <Text style={{ color: "#A3A3A3", fontSize: 14 }}>
-            MAnish@gmail.com
-          </Text>
+          <Text style={{ color: "#A3A3A3", fontSize: 14 }}>{userEmail}</Text>
         </View>
       </View>
 
@@ -55,7 +103,7 @@ const Account = () => {
         <View style={{ marginBottom: 16 }}>
           <Text style={{ color: "#A3A3A3", fontSize: 14 }}>Account Number</Text>
           <Text style={{ color: "#E0E0E0", fontSize: 18, fontWeight: "600" }}>
-            XXXX XXXX 47674
+            {accountNumber}
           </Text>
         </View>
 
@@ -65,7 +113,7 @@ const Account = () => {
             Available Balance
           </Text>
           <Text style={{ color: "#4CAF50", fontSize: 22, fontWeight: "700" }}>
-            $87,098.00 Cr
+            ₹{availableBalance}
           </Text>
         </View>
       </View>
@@ -93,7 +141,7 @@ const Account = () => {
             paddingLeft: 10,
           }}
         >
-          Children Bank of Joseph
+          {bankName}
         </Text>
       </View>
 
@@ -121,7 +169,7 @@ const Account = () => {
         >
           <Text style={{ color: "#A3A3A3", fontSize: 14 }}>Phone Number</Text>
           <Text style={{ color: "#E0E0E0", fontSize: 18, fontWeight: "600" }}>
-            9878677656
+            {userPhone}
           </Text>
         </View>
 
