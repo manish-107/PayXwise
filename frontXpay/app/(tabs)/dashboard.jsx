@@ -58,7 +58,6 @@ const Dashboard = () => {
       );
 
       const { userData, accountDetails, transactions = [] } = response.data;
-      console.log(userData)
       setUsername(userData?.fullName || "User");
       setUserId(userData?.user_id);
       setAmount(accountDetails?.[0]?.balance || 0);
