@@ -159,7 +159,7 @@ const Dashboard = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={buttonStyle}
-            onPress={() => router.push("/Scan")}
+            onPress={() => router.push("/QRCode")}
           >
             <MaterialIcons name="qr-code-scanner" size={36} color="black" />
             <Text style={buttonTextStyle}>Scan</Text>
