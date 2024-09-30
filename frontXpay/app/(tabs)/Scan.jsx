@@ -10,7 +10,7 @@ import {
 import { useCallback, useEffect, useRef } from "react";
 import { Overlay } from "../../components/Overlay.jsx";
 
-export default function Home() {
+export default function Scan() {
   const qrLock = useRef(false);
   const appState = useRef(AppState.currentState);
   const router = useRouter();
@@ -23,8 +23,12 @@ export default function Home() {
 
   useEffect(() => {
     (async () => {
-      await Camera.requestCameraPermissionsAsync();
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      if (status !== "granted") {
+        alert("Camera permission is required!");
+      }
     })();
+
     const subscription = AppState.addEventListener("change", (nextAppState) => {
       if (
         appState.current.match(/inactive|background/) &&
@@ -49,14 +53,18 @@ export default function Home() {
         }}
       />
       {Platform.OS === "android" ? <StatusBar hidden /> : null}
-      {/* <Text style={style.title}>Scan to pay</Text> */}
       <CameraView
         style={StyleSheet.absoluteFill}
         facing="back"
         onBarcodeScanned={({ data }) => {
-          if (data && !qrLock.current) {
-            qrLock.current = true;
-            router.push(`/payTo/${data}`);
+          try {
+            if (data && !qrLock.current) {
+              qrLock.current = true;
+              router.push(`/payTo/${data}`);
+            }
+          } catch (error) {
+            console.error("Error while scanning barcode:", error);
+            qrLock.current = false; // Reset the lock in case of error
           }
         }}
       />
@@ -64,13 +72,3 @@ export default function Home() {
     </SafeAreaView>
   );
 }
-
-// const style = StyleSheet.create({
-//     title: {
-//         fontSize: 24,
-//         fontWeight: 'bold',
-//         marginBottom: 20,
-//         color: 'white',
-//         position: 'absolute',
-//     },
-// });

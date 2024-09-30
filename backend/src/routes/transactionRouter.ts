@@ -432,3 +432,25 @@ transactionRoute.get("/transactionHistory", async (c) => {
     return c.json({ error: "Failed to fetch transaction history." }, 500);
   }
 });
+
+transactionRoute.post("/cleanDatabase", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  });
+
+  try {
+    // Begin the database cleanup within a transaction to ensure atomicity
+
+    // Delete all records from each model in a safe order (to prevent foreign key violations)
+    await prisma.transactionDetails.deleteMany({});
+    await prisma.expanses.deleteMany({});
+    await prisma.expanseCategory.deleteMany({});
+    await prisma.account.deleteMany({});
+    await prisma.user.deleteMany({});
+
+    return c.json({ message: "All data cleaned successfully." }, 200);
+  } catch (error) {
+    console.error("Error cleaning database:", error);
+    return c.json({ error: "Failed to clean the database." }, 500);
+  }
+});

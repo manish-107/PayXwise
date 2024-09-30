@@ -5,13 +5,13 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  BackHandler,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useRouter, useFocusEffect } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import DashboardPeople from "../../components/DashBoardPeople.jsx";
 import LastFiveTransaction from "../../components/LastFiveTransaction.jsx";
 import SearchInput from "../../components/SearchInput.jsx";
@@ -45,6 +45,7 @@ const Dashboard = () => {
       const token = await AsyncStorage.getItem("jwtToken");
       if (!token) {
         Alert.alert("Error", "Unauthorized. Token not found.");
+        router.push("(auth)/signin"); // Redirect to sign-in if token not found
         return;
       }
 
@@ -70,9 +71,40 @@ const Dashboard = () => {
     }
   };
 
+  // Handle back button press
+  const handleBackPress = async () => {
+    const token = await AsyncStorage.getItem("jwtToken");
+    if (token) {
+      // Close the app if the token exists
+      BackHandler.exitApp();
+      return true; // Prevent default behavior
+    }
+    return false; // Allow default behavior
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        handleBackPress
+      );
+
+      return () => backHandler.remove();
+    }, [])
+  );
+
   // Fetch transaction history on component mount
   useEffect(() => {
-    fetchTransactionHistory();
+    const checkTokenAndFetchData = async () => {
+      const token = await AsyncStorage.getItem("jwtToken");
+      if (!token) {
+        router.push("(auth)/signin"); // Redirect to sign-in if token not found
+      } else {
+        fetchTransactionHistory();
+      }
+    };
+
+    checkTokenAndFetchData();
   }, []);
 
   // If loading, display a large, centered ActivityIndicator
@@ -119,7 +151,7 @@ const Dashboard = () => {
             <View>
               <Text className="text-xl font-semibold text-white">Amount</Text>
               <View className="flex flex-row items-center pt-3">
-                <Text className="text-xl font-bold text-white">$ {amount}</Text>
+                <Text className="text-xl font-bold text-white">₹ {amount}</Text>
               </View>
             </View>
             <TouchableOpacity onPress={onLogout}>
@@ -152,7 +184,12 @@ const Dashboard = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={buttonStyle}
-            onPress={() => router.push({ pathname: "/QRCode", params: { qrValue: userId } })}
+            onPress={() =>
+              router.push({
+                pathname: "(details)/QRCode",
+                params: { qrValue: userId },
+              })
+            }
           >
             <AntDesign name="qrcode" size={36} color="black" />
             <Text style={buttonTextStyle}>QR code</Text>

@@ -6,10 +6,12 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios"; // Make sure axios is imported
+import { useRouter } from "expo-router";
 
 const Account = () => {
   const [accountDetails, setAccountDetails] = useState(null);
-  const [loading, setLoading] = useState(true); // State for loading indicator
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   const fetchAccDetails = async () => {
     try {
@@ -27,7 +29,8 @@ const Account = () => {
         setLoading(false); // Stop loading once data is fetched
       }
     } catch (error) {
-      console.log(error);
+      Alert.alert("Error", `Something went wrong`);
+      router.push("(auth)/signin");
       setLoading(false); // Stop loading in case of an error
     }
   };

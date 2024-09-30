@@ -102,7 +102,6 @@ const SendToUser = () => {
 
   useEffect(() => {
     if (toQuery) {
-      console.log(toQuery)
       fetchUserDetails(toQuery);
     }
   }, [toQuery]);
@@ -179,7 +178,7 @@ const SendToUser = () => {
       setLoading(true); // Start loading
 
       const fromAccNo = userAccount.acc_no;
-      console.log(toAccID, amount, selectedExpenseId, description, fromAccNo);
+
       const payRes = await axios.post(
         `${BASEURL}/api/v1/transaction/sentMoney`,
         {
@@ -239,7 +238,7 @@ const SendToUser = () => {
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
             <ActivityIndicator size="large" color="#0000ff" />
-            <Text style={{ marginTop: 10 }}>Loading...</Text>
+            <Text style={{ marginTop: 10 }}>Loading please wait...</Text>
           </View>
         ) : (
           <View className="items-center">

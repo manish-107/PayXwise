@@ -10,10 +10,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
+import { useRouter } from "expo-router";
 
 const Expanse = () => {
   const [expanseDetails, setExpanseDetails] = useState([]);
   const [loading, setLoading] = useState(true); // State for loading indicator
+  const route = useRouter();
 
   const fetchUserExpanse = async () => {
     try {
@@ -33,7 +35,8 @@ const Expanse = () => {
         setLoading(false); // Set loading to false when data is fetched
       }
     } catch (error) {
-      console.log(error);
+      Alert.alert("Error", `Something went wrong`);
+      route.push("(auth)/signin");
       setLoading(false); // Stop loading in case of an error
     }
   };

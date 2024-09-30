@@ -1,5 +1,5 @@
 import { View, Text, BackHandler, Alert } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -11,8 +11,8 @@ import BASEURL from "../Var.js";
 const PayDetails = () => {
   const [transDetails, setTransDetails] = useState(null); // Initialize as null
   const { transactionId } = useLocalSearchParams();
+  const route = useRouter();
 
-  console.log(transactionId);
   const fetchTransactionDetails = async (transId) => {
     try {
       const token = await AsyncStorage.getItem("jwtToken");
@@ -29,15 +29,15 @@ const PayDetails = () => {
           },
         }
       );
-      console.log(response);
+
       setTransDetails(response.data); // Assign the response data to the state
     } catch (error) {
-      console.log(error);
+      Alert.alert("Error", `Something went wrong`);
+      route.push("(auth)/signin");
     }
   };
 
   useEffect(() => {
-    console.log(transactionId);
     fetchTransactionDetails(transactionId);
     const onBackPress = () => {
       router.push("(tabs)/dashboard"); // Navigate to Dashboard
@@ -54,7 +54,7 @@ const PayDetails = () => {
     // Render a loading state while transaction details are being fetched
     return (
       <SafeAreaView className="items-center justify-center flex-1">
-        <Text>Loading...</Text>
+        <Text>Paying please wait...</Text>
       </SafeAreaView>
     );
   }

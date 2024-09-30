@@ -29,7 +29,7 @@ const LastFiveTransaction = ({ transactions }) => {
 
                 <View className="flex flex-row items-center justify-between">
                   <Text className="text-xl font-bold text-white">
-                    $ {transaction.amount}
+                    ₹ {transaction.amount}
                   </Text>
                   <Text className="text-sm font-medium text-gray-400">
                     {new Date(transaction.trans_date).toLocaleDateString()}

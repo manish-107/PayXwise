@@ -47,7 +47,7 @@ const SearchInput = ({ initialQuery }) => {
           fontFamily: "Roboto",
         }}
         value={query}
-        placeholder="Search for topics or videos"
+        placeholder="search and pay friends"
         placeholderTextColor="#6B7280" // Lighter placeholder color
         onChangeText={setQuery}
         onSubmitEditing={handleSearch}

@@ -8,14 +8,13 @@
         "icon": "./assets/transfer.png",
         "userInterfaceStyle": "light",
         "splash": {
-            "image": "./assets/transfer.png",
+            "image": "./assets/frontimg.png",
             "resizeMode": "contain",
             "backgroundColor": "#ffffff"
         },
         "ios": {
             "supportsTablet": true
         },
-
         "android": {
             "adaptiveIcon": {
                 "foregroundImage": "./assets/transfer.png",

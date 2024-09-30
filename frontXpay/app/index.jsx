@@ -21,7 +21,7 @@ const Index = () => {
         }
         setLoading(false); // Set loading to false after checking token
       } catch (error) {
-        console.log("Error checking token", error);
+        router.push("(auth)/signin");
         setLoading(false);
       }
     };

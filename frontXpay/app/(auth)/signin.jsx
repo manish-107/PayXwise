@@ -11,6 +11,8 @@ import { Link, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import CustomeButton from "../../components/customeButton.jsx";
+import { BackHandler } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // For storing JWT token
 import BASEURL from "../Var.js"; // Your base URL
@@ -22,11 +24,24 @@ const SignIn = () => {
   const [loading, setLoading] = useState(false); // Loading state
   const route = useRouter();
 
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        return true; // Returning true disables the back button
+      };
+
+      BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+      return () =>
+        BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+    }, [])
+  );
+
   const storeToken = async (token) => {
     try {
       await AsyncStorage.setItem("jwtToken", token);
     } catch (error) {
-      console.log("Error storing token", error);
+      Alert.alert("Sign-in Error", `Something went wrong`);
     }
   };
 
@@ -43,9 +58,6 @@ const SignIn = () => {
         password: trimmedPassword,
       });
 
-      console.log(trimmedEmail, trimmedPassword);
-      console.log(response.data);
-
       // Check if token exists in response data
       const { token } = response.data;
 
@@ -58,11 +70,10 @@ const SignIn = () => {
         Alert.alert("Sign-in Error", `${error.response?.data?.message}`);
       }
     } catch (error) {
-      console.error("Sign-in error", error);
       // More specific error handling for network or validation errors
       Alert.alert(
         "Sign-in Error",
-        error.response?.data?.message || "An error occurred during sign-in."
+        error.response?.data?.message || "Email and password Incorrect."
       );
     } finally {
       setLoading(false); // Stop loading
